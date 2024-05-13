@@ -1,1 +1,39 @@
+@font-face { font-family: 'MotivaSansBlack'; src: url('resources/fonts/MotivaSansBlack.ttf'); }
+@font-face { font-family: 'MotivaSansBold'; src: url('resources/fonts/MotivaSansBold.ttf'); }
+@font-face { font-family: 'MotivaSansExtraBold'; src: url('resources/fonts/MotivaSansExtraBold.ttf'); }
+@font-face { font-family: 'MotivaSansLight'; src: url('resources/fonts/MotivaSansLight.ttf'); }
+@font-face { font-family: 'MotivaSansMedium'; src: url('resources/fonts/MotivaSansMedium.ttf'); }
+@font-face { font-family: 'MotivaSansRegular'; src: url('resources/fonts/MotivaSansRegular.ttf'); }
+@font-face { font-family: 'MotivaSansThin'; src: url('resources/fonts/MotivaSansThin.ttf'); }
+/* TODO: remove unused fonts */
 
+body {
+	margin: 0;
+	font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
+}
+
+header {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #171D25;
+	color: #C5C3C0;
+	padding: 10px;
+	text-align: center;
+}
+header a {
+	color: inherit;
+	text-decoration: none;
+}
+header .logo {
+	font-family: 'MotivaSansBlack', Arial, Helvetica, sans-serif;
+}
+
+.post {
+	background-color: #f2f2f2;
+	padding: 10px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	display: flex;
+	justify-content: center;
+}

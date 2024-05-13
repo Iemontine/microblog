@@ -234,21 +234,26 @@ function isAuthenticated(req, res, next) {
 
 // Function to register a user
 function registerUser(req, res) {
-	// TODO: Register a new user and redirect appropriately
 	let userName = req.body.userName;
-	let user = addUser(userName);	
-	console.log(users);
-	req.session.user = user;
-	req.session.userId = user.id;
-	req.session.loggedIn = true;
-	req.session.save((err) => {
-		if (err) {
-			console.error('Error saving session:', err);
-			res.status(500).send('Internal Server Error');
-		} else {
-			res.redirect('/');
-		}
-	})
+	let existingUser = findUserByUsername(userName);
+
+	if (existingUser) {
+		// TODO: handle this, display redtext saying "User already exists"
+	} else {
+		let user = addUser(userName);
+		console.log(users);
+		req.session.user = user;
+		req.session.userId = user.id;
+		req.session.loggedIn = true;
+		req.session.save((err) => {
+			if (err) {
+				console.error('Error saving session:', err);
+				res.status(500).send('Internal Server Error');
+			} else {
+				res.redirect('/');
+			}
+		});
+	}
 }
 
 // Function to login a user

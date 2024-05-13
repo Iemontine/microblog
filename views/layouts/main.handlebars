@@ -18,28 +18,25 @@
 			<h1>{{{appName}}}</h1>
 		</div>
 		<nav>
-			<ul>
-				<!-- conditional rendering based on variables - Is the user logged in?-->
-				{{#if loggedIn}}
-					<li><a href="/">Home</a></li>
-					<li><a href="/profile">Profile</a></li>
-					<li><a href="/logout">Logout <span>{{user.username}}</span> </a></li>
-					<div class="user-info">
+			<!-- conditional rendering based on variables - Is the user logged in?-->
+			<a href="/">HOME</a>
+			{{#if loggedIn}}
+				<a href="/profile">PROFILE</a>
+				<a href="/logout">LOGOUT <span>{{user.username}}</span></a>
+				<div class="user-info">
 
-						<!-- conditional rendering based on variables -->
-						<img src="{{#if user.avatar_url}}
-										{{user.avatar_url}}
-									{{else}}
-										/avatar/{{user.username}}
-									{{/if}}" 
-									alt="User Avatar" 
-									class="header-avatar">
-					</div>
-				{{else}}
-					<li><a href="/">Home</a></li>
-					<li><a href="/login">Login/Register</a></li>
-				{{/if}}
-			</ul>
+					<!-- conditional rendering based on variables -->
+					<img src="{{#if user.avatar_url}}
+									{{user.avatar_url}}
+								{{else}}
+									/avatar/{{user.username}}
+								{{/if}}" 
+								alt="User Avatar" 
+								class="header-avatar">
+				</div>
+			{{else}}
+				<a href="/login">LOGIN</a>
+			{{/if}}
 		</nav>
 	</header>
 
