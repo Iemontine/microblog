@@ -98,7 +98,6 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 app.get('/', (req, res) => {
 	const posts = getPosts();
 	const user = getCurrentUser(req) || {};
-	console.log(user);
 	res.render('home', { posts, user});
 });
 
@@ -140,46 +139,15 @@ app.get('/avatar/:username', (req, res) => {
 });
 app.post('/register', (req, res) => {
 	// TODO: Register a new user
-	let posts = getPosts();
-	let userName = req.body.userName;
-	let user = addUser(userName);	
-	console.log(users);
-	req.session.user = user;
-	req.session.userId = user.id;
-	req.session.loggedIn = true;
-	req.session.save((err) => {
-		if (err) {
-			console.error('Error saving session:', err);
-			res.status(500).send('Internal Server Error');
-		} else {
-			res.redirect('/');
-		}
-	})
+	registerUser(req, res);
+	
 });
 app.post('/login', (req, res) => {
 	// TODO: Login a user
 	
 	try {
-		let posts = getPosts();
-		let userName = req.body.userName;
-		let user = findUserByUsername(userName);
-		if (user) {
-			req.session.user = user;
-			req.session.userId = user.id;
-			req.session.loggedIn = true;
-			req.session.save((err) => {
-				if (err) {
-					console.error('Error saving session:', err);
-					res.status(500).send('Internal Server Error');
-				} else {
-					
-					res.redirect('/');
-					// res.render('home', { posts, user});
-				}
-			})
-		} else {
-			res.send('Could not find user');
-		}
+		loginUser(req, res);
+		
 	} catch (error) {
 		console.log(error);
 	}
@@ -187,8 +155,7 @@ app.post('/login', (req, res) => {
 });
 app.get('/logout', (req, res) => {
 	// TODO: Logout the user
-	req.session.destroy();
-	res.redirect('/');
+	logoutUser(req, res);
 });
 app.post('/delete/:id', isAuthenticated, (req, res) => {
 	// TODO: Delete a post if the current user is the owner
@@ -268,16 +235,49 @@ function isAuthenticated(req, res, next) {
 // Function to register a user
 function registerUser(req, res) {
 	// TODO: Register a new user and redirect appropriately
+	let userName = req.body.userName;
+	let user = addUser(userName);	
+	console.log(users);
+	req.session.user = user;
+	req.session.userId = user.id;
+	req.session.loggedIn = true;
+	req.session.save((err) => {
+		if (err) {
+			console.error('Error saving session:', err);
+			res.status(500).send('Internal Server Error');
+		} else {
+			res.redirect('/');
+		}
+	})
 }
 
 // Function to login a user
 function loginUser(req, res) {
 	// TODO: Login a user and redirect appropriately
+	let userName = req.body.userName;
+		let user = findUserByUsername(userName);
+		if (user) {
+			req.session.user = user;
+			req.session.userId = user.id;
+			req.session.loggedIn = true;
+			req.session.save((err) => {
+				if (err) {
+					console.error('Error saving session:', err);
+					res.status(500).send('Internal Server Error');
+				} else {
+					res.redirect('/');
+				}
+			})
+		} else {
+			res.send('Could not find user');
+		}
 }
 
 // Function to logout a user
 function logoutUser(req, res) {
 	// TODO: Destroy session and redirect appropriately
+	req.session.destroy();
+	res.redirect('/');
 }
 
 // Function to render the profile page
