@@ -98,7 +98,8 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 app.get('/', (req, res) => {
 	const posts = getPosts();
 	const user = getCurrentUser(req) || {};
-	res.render('home', { posts, user });
+	console.log(user);
+	res.render('home', { posts, user});
 });
 
 // Register GET route is used for error response from registration
@@ -139,12 +140,55 @@ app.get('/avatar/:username', (req, res) => {
 });
 app.post('/register', (req, res) => {
 	// TODO: Register a new user
+	let posts = getPosts();
+	let userName = req.body.userName;
+	let user = addUser(userName);	
+	console.log(users);
+	req.session.user = user;
+	req.session.userId = user.id;
+	req.session.loggedIn = true;
+	req.session.save((err) => {
+		if (err) {
+			console.error('Error saving session:', err);
+			res.status(500).send('Internal Server Error');
+		} else {
+			res.redirect('/');
+		}
+	})
 });
 app.post('/login', (req, res) => {
 	// TODO: Login a user
+	
+	try {
+		let posts = getPosts();
+		let userName = req.body.userName;
+		let user = findUserByUsername(userName);
+		if (user) {
+			req.session.user = user;
+			req.session.userId = user.id;
+			req.session.loggedIn = true;
+			req.session.save((err) => {
+				if (err) {
+					console.error('Error saving session:', err);
+					res.status(500).send('Internal Server Error');
+				} else {
+					
+					res.redirect('/');
+					// res.render('home', { posts, user});
+				}
+			})
+		} else {
+			res.send('Could not find user');
+		}
+	} catch (error) {
+		console.log(error);
+	}
+	
 });
 app.get('/logout', (req, res) => {
 	// TODO: Logout the user
+	req.session.destroy();
+	res.redirect('/');
 });
 app.post('/delete/:id', isAuthenticated, (req, res) => {
 	// TODO: Delete a post if the current user is the owner
@@ -175,16 +219,40 @@ let users = [
 // Function to find a user by username
 function findUserByUsername(username) {
 	// TODO: Return user object if found, otherwise return undefined
+	let user = users.find(user => user.username === username);
+	if (user) {
+		return user;
+	}
+	return null;
 }
 
 // Function to find a user by user ID
 function findUserById(userId) {
 	// TODO: Return user object if found, otherwise return undefined
+	let user = users.find(user => user.id === userId);
+	if (user) {
+		return user;
+	}
+	return null;
 }
 
 // Function to add a new user
 function addUser(username) {
 	// TODO: Create a new user object and add to users array
+	let date = new Date();
+	const year = date.getFullYear();
+	const month = date.getMonth();
+	const day = date.getDay();
+	const hour = date.getHours();
+	const minute = date.getMinutes();
+	let user = {
+		id: users.length + 1,
+		username: username,
+		avatar_url: undefined,
+		memberSince: year + '-' + month + '-' + day + ' ' + hour + ':' + minute,
+	}
+	users.push(user);
+	return user;
 }
 
 // Middleware to check if user is authenticated
@@ -230,6 +298,7 @@ function handleAvatar(req, res) {
 // Function to get the current user from session
 function getCurrentUser(req) {
 	// TODO: Return the user object if the session user ID matches
+	return req.session.user;
 }
 
 // Function to get all posts, sorted by latest first
