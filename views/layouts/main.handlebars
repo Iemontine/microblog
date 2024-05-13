@@ -18,25 +18,27 @@
 			<h1>{{{appName}}}</h1>
 		</div>
 		<nav>
-			<!-- conditional rendering based on variables - Is the user logged in?-->
-			<a href="/">HOME</a>
-			{{#if loggedIn}}
-				<a href="/profile">PROFILE</a>
-				<a href="/logout">LOGOUT <span>{{user.username}}</span></a>
-				<div class="user-info">
+			<ul>
+				<!-- conditional rendering based on variables - Is the user logged in?-->
+				<li><a href="/">HOME</a></li>
+				{{#if loggedIn}}
+					<li><a href="/profile">PROFILE</a></li>
+					<li><a href="/logout">LOGOUT</a></li>
+					<div class="user-info">
 
-					<!-- conditional rendering based on variables -->
-					<img src="{{#if user.avatar_url}}
-									{{user.avatar_url}}
-								{{else}}
-									/avatar/{{user.username}}
-								{{/if}}" 
-								alt="User Avatar" 
-								class="header-avatar">
-				</div>
-			{{else}}
-				<a href="/login">LOGIN</a>
-			{{/if}}
+						<!-- conditional rendering based on variables -->
+						<img src="{{#if user.avatar_url}}
+										{{user.avatar_url}}
+									{{else}}
+										/avatar/{{user.username}}
+									{{/if}}" 
+									alt="User Avatar" 
+									class="header-avatar">
+					</div>
+				{{else}}
+					<li><a href="/login">LOGIN</a></li>
+				{{/if}}
+			</ul>
 		</nav>
 	</header>
 
@@ -45,5 +47,18 @@
 	<footer>
 		<p>© {{{copyrightYear}}} {{{appName}}}. All rights reserved.</p>
 	</footer>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			const currentPath = window.location.pathname;
+			const links = document.querySelectorAll('nav ul li a');
+			links.forEach(link => {
+				if (link.getAttribute('href') === currentPath) {
+					link.style.color = '#FF6347'; // Change font color
+					link.style.textDecoration = 'underline'; // Add underline
+				}
+			});
+		});
+	</script>
 </body>
 </html>
