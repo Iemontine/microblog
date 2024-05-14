@@ -141,6 +141,9 @@ app.post('/like/:id', (req, res) => {
 });
 app.get('/profile', isAuthenticated, (req, res) => {
 	// TODO: Render profile page
+	const posts = getPosts();
+	const user = getCurrentUser(req) || {};
+	res.render('profile', {posts, user});
 });
 app.get('/avatar/:username', (req, res) => {
 	// TODO: Serve the avatar image for the user
