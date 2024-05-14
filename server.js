@@ -127,6 +127,11 @@ app.get('/post/:id', (req, res) => {
 });
 app.post('/posts', (req, res) => {
 	// TODO: Add a new post and redirect to home
+	let title = req.body.title;
+	let content = req.body.content;
+	let user = req.session.user;
+	addPost(title, content, user);
+	res.redirect('/');
 });
 app.post('/like/:id', (req, res) => {
 	// TODO: Update post likes
@@ -220,17 +225,12 @@ function findUserById(userId) {
 // Function to add a new user
 function addUser(username) {
 	// TODO: Create a new user object and add to users array
-	let date = new Date();
-	const year = date.getFullYear();
-	const month = date.getMonth();
-	const day = date.getDay();
-	const hour = date.getHours();
-	const minute = date.getMinutes();
+	let timeStamp = getNewTimeStamp();
 	let user = {
 		id: users.length + 1,
 		username: username,
 		avatar_url: undefined,
-		memberSince: year + '-' + month + '-' + day + ' ' + hour + ':' + minute,
+		memberSince: timeStamp,
 	}
 	users.push(user);
 	return user;
@@ -341,6 +341,14 @@ function getPosts() {
 // Function to add a new post
 function addPost(title, content, user) {
 	// TODO: Create a new post object and add to posts array
+	let post = {
+		title: title,
+		content: content,
+		username: user.username,
+		timestamp: getNewTimeStamp(),
+		likes: 0,
+	}
+	posts.push(post);
 }
 
 // Function to generate an image avatar
@@ -352,4 +360,15 @@ function generateAvatar(letter, width = 100, height = 100) {
 	// 3. Draw the background color
 	// 4. Draw the letter in the center
 	// 5. Return the avatar as a PNG buffer
+}
+
+function getNewTimeStamp() {
+	let date = new Date();
+	const year = date.getFullYear();
+	const month = date.getMonth();
+	const day = date.getDay();
+	const hour = date.getHours();
+	const minute = date.getMinutes();
+	let timeStamp = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+	return timeStamp;
 }
