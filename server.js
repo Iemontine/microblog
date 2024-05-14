@@ -130,6 +130,14 @@ app.post('/posts', (req, res) => {
 });
 app.post('/like/:id', (req, res) => {
 	// TODO: Update post likes
+	try {
+		updatePostLikes(req,res);
+		
+	} catch (error) {
+		console.error(error);
+		res.send(500);
+	}
+	
 });
 app.get('/profile', isAuthenticated, (req, res) => {
 	// TODO: Render profile page
@@ -177,7 +185,10 @@ app.listen(PORT, () => {
 let posts = [
 	{ id: 1, title: 'Sample Post', content: 'This is a sample post.', username: 'SampleUser', timestamp: '2024-01-01 10:00', likes: 0 },
 	{ id: 2, title: 'Another Post', content: 'This is another sample post.', username: 'AnotherUser', timestamp: '2024-01-02 12:00', likes: 0 },
+	{ id: 3, title: 'Another Post', content: 'This is another sample post.', username: 'AnotherUser', timestamp: '2024-01-02 12:00', likes: 0 },
+
 ];
+
 let users = [
 	{ id: 1, username: 'SampleUser', avatar_url: undefined, memberSince: '2024-01-01 08:00' },
 	{ id: 2, username: 'AnotherUser', avatar_url: undefined, memberSince: '2024-01-02 09:00' },
@@ -237,7 +248,6 @@ function registerUser(req, res) {
 	// TODO: Register a new user and redirect appropriately
 	let userName = req.body.userName;
 	let user = addUser(userName);	
-	console.log(users);
 	req.session.user = user;
 	req.session.userId = user.id;
 	req.session.loggedIn = true;
@@ -288,6 +298,25 @@ function renderProfile(req, res) {
 // Function to update post likes
 function updatePostLikes(req, res) {
 	// TODO: Increment post likes if conditions are met
+	try {
+		const postId = parseInt(req.params.id);
+		let post = posts.find(post => post.id === postId);
+		let currentUser = req.session.user;
+		if (!('postsLikedId' in currentUser)) {
+			currentUser.postsLikedId = [];
+		}
+		let index = currentUser.postsLikedId.indexOf(postId)
+		if (index !== -1) {
+			currentUser.postsLikedId.splice(index, 1);
+			post.likes--;
+		} else {
+			currentUser.postsLikedId.push(postId);
+			post.likes++;
+		}
+		res.send(200);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Function to handle avatar generation and serving

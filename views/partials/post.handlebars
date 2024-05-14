@@ -11,18 +11,27 @@
 			<!-- everything that is shown in the status bar -->
 			<!-- Heart = ♥ -->
 			<!-- font awesome  trashcan = <i class="fas fa-trash-alt"> </i>-->
-			<button id="likeButton">♥</button>
-			<span>{{this.likes}} likes</span>
+			<button class="likeButton" data-id={{this.id}} onclick="handleLikeClick(event)">♥</button>
+			<span class="likes">{{this.likes}} likes</span>
 			<span>Posted by {{this.username}} on {{this.timestamp}}</span>
 		</div>        
 	</div>
 </div>
 <script>
 
-
-
 	function handleLikeClick(event) {
 		const postId = event.target.getAttribute('data-id');
+		try {
+			fetch('/like/' + postId, {
+				method: 'POST',
+			})
+			.then(res => {
+				window.location.reload();
+			})
+			.catch(error => console.log(error))
+		} catch (error) {
+			console.log(error);
+		}
 		// you might want to "fetch" something...        
 	}
 
