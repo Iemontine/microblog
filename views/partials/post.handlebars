@@ -12,15 +12,21 @@
 			<!-- everything that is shown in the status bar -->
 			<!-- Heart = ♥ -->
 			<!-- font awesome  trashcan = <i class="fas fa-trash-alt"> </i>-->
-			{{#if loggedIn}}
-			<button class="likeButton" data-id={{this.id}} onclick="handleLikeClick(event)">♥</button>
-			{{/if}}
+			<button class="likeButton" data-id={{this.id}}>♥</button>
+
 			<span class="likes">{{this.likes}} likes</span>
 			<span>Posted by {{this.username}} on {{this.timestamp}}</span>
 		</div>        
 	</div>
 </div>
 <script>
+
+	document.addEventListener('click', function(event) {
+		if (event.target.classList.contains('likeButton')) {
+			console.log("clicked");
+			handleLikeClick(event);
+		} 
+	})
 
 	function handleLikeClick(event) {
 		const postId = event.target.getAttribute('data-id');
@@ -29,12 +35,14 @@
 				method: 'POST',
 			})
 			.then(res => {
-				window.location.reload();
+				console.log(res);
 			})
 			.catch(error => console.log(error))
 		} catch (error) {
 			console.log(error);
 		}
+		window.location.reload();
+
 		// you might want to "fetch" something...        
 	}
 

@@ -306,7 +306,7 @@ function updatePostLikes(req, res) {
 		if (!('postsLikedId' in currentUser)) {
 			currentUser.postsLikedId = [];
 		}
-		let index = currentUser.postsLikedId.indexOf(postId)
+		let index = currentUser.postsLikedId.indexOf(postId);
 		if (index !== -1) {
 			currentUser.postsLikedId.splice(index, 1);
 			post.likes--;
@@ -314,7 +314,6 @@ function updatePostLikes(req, res) {
 			currentUser.postsLikedId.push(postId);
 			post.likes++;
 		}
-		res.send(200);
 	} catch (error) {
 		console.error(error);
 	}
@@ -340,6 +339,7 @@ function getPosts() {
 function addPost(title, content, user) {
 	// TODO: Create a new post object and add to posts array
 	let post = {
+		id: posts.length,
 		title: title,
 		content: content,
 		username: user.username,
