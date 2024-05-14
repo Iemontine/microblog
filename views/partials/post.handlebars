@@ -12,7 +12,9 @@
 			<!-- everything that is shown in the status bar -->
 			<!-- Heart = ♥ -->
 			<!-- font awesome  trashcan = <i class="fas fa-trash-alt"> </i>-->
+			{{#if loggedIn}}
 			<button class="likeButton" data-id={{this.id}} onclick="handleLikeClick(event)">♥</button>
+			{{/if}}
 			<span class="likes">{{this.likes}} likes</span>
 			<span>Posted by {{this.username}} on {{this.timestamp}}</span>
 		</div>        

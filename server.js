@@ -127,11 +127,16 @@ app.get('/post/:id', (req, res) => {
 });
 app.post('/posts', (req, res) => {
 	// TODO: Add a new post and redirect to home
-	let title = req.body.title;
-	let content = req.body.content;
-	let user = req.session.user;
-	addPost(title, content, user);
-	res.redirect('/');
+	try {
+		let title = req.body.title;
+		let content = req.body.content;
+		let user = req.session.user;
+		addPost(title, content, user);
+		
+		res.redirect('/');
+	} catch (error) {
+		console.error(error);
+	}
 });
 app.post('/like/:id', (req, res) => {
 	// TODO: Update post likes
@@ -146,9 +151,9 @@ app.post('/like/:id', (req, res) => {
 });
 app.get('/profile', isAuthenticated, (req, res) => {
 	// TODO: Render profile page
-	const posts = getPosts();
 	const user = getCurrentUser(req) || {};
-	res.render('profile', {posts, user});
+	console.log(user);
+	res.render('profile', {user});
 });
 app.get('/avatar/:username', (req, res) => {
 	// TODO: Serve the avatar image for the user
@@ -160,12 +165,10 @@ app.post('/register', (req, res) => {
 });
 app.post('/login', (req, res) => {
 	// TODO: Login a user
-	
 	try {
 		loginUser(req, res);
-		
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 	}
 	
 });
@@ -190,12 +193,7 @@ app.listen(PORT, () => {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Example data for posts and users
-let posts = [
-	{ id: 1, title: 'Sample Post', content: 'This is a sample post.', username: 'SampleUser', timestamp: '2024-01-01 10:00', likes: 0 },
-	{ id: 2, title: 'Another Post', content: 'This is another sample post.', username: 'AnotherUser', timestamp: '2024-01-02 12:00', likes: 0 },
-	{ id: 3, title: 'Another Post', content: 'This is another sample post.', username: 'AnotherUser', timestamp: '2024-01-02 12:00', likes: 0 },
-
-];
+let posts = [];
 
 let users = [
 	{ id: 1, username: 'SampleUser', avatar_url: undefined, memberSince: '2024-01-01 08:00' },
@@ -348,6 +346,10 @@ function addPost(title, content, user) {
 		timestamp: getNewTimeStamp(),
 		likes: 0,
 	}
+	if (!('posts' in user)) {
+		user.posts = [];
+	}
+	user.posts.push(post);
 	posts.push(post);
 }
 
