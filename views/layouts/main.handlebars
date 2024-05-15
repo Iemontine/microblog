@@ -22,9 +22,10 @@
 				<!-- conditional rendering based on variables - Is the user logged in?-->
 				<li><a href="/">HOME</a></li>
 				{{#if loggedIn}}
-					<li><a href="/profile">PROFILE</a></li>
+					<li><a href="/profile">{{user.username}}</a></li>
+					{{!-- TODO: get user.username to be uppercase when rendered --}}
 					<li><a href="/logout">LOGOUT</a></li>
-					<div class="user-info">
+					{{!-- <div class="user-info">
 
 						<!-- conditional rendering based on variables -->
 						<img src="{{#if user.avatar_url}}
@@ -34,7 +35,7 @@
 									{{/if}}" 
 									alt="User Avatar" 
 									class="header-avatar">
-					</div>
+					</div> --}}
 				{{else}}
 					<li><a href="/login">LOGIN</a></li>
 				{{/if}}

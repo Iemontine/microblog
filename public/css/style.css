@@ -7,22 +7,24 @@
 @font-face { font-family: 'MotivaSansThin'; src: url('resources/fonts/MotivaSansThin.ttf'); }
 /* TODO: remove unused fonts */
 
+/* ================================ GENERAL ================================ */
 body {
 	margin: 0;
 	font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
 	background: radial-gradient(circle, #143241, #1B2838);
 }
+
+/* ================================ NAVBAR ================================ */
 header {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	background-color: #171D25;
 	color: #C5C3C0;
-	padding: 10px;
+	padding: 11px;
 	text-align: center;
-	gap: 20px;
+	gap: 25px;
 }
-
 header .logo {
 	font-family: 'MotivaSansBlack', Arial, Helvetica, sans-serif;
 }
@@ -42,14 +44,27 @@ nav ul li a {
 	font-family: 'MotivaSansMedium', Arial, Helvetica, sans-serif;
 }
 
+/* ================================ POSTS ================================ */
 .post {
-    display: flex;
-    flex-direction: column;
+	display: flex;
+	flex-direction: column;
 	background-color: #0D131B;
-    border-radius: 8px; /* Rounded corners */
-    padding: 10px;
-	margin: 50px;
-    position: relative;
+	border-radius: 8px;
+	padding: 10px;
+	max-width: 925px;
+	position: relative;
+	margin: 0px auto;
+	margin-top: 30px;
+}
+@media (max-width: 925px) {
+	.post {
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+}
+.post-content p {
+	margin-top: 0;
+	color: #D3D4D5;
 }
 .post-avatar {
     position: absolute;
@@ -57,7 +72,7 @@ nav ul li a {
     left: 10px;
     width: 50px;
     height: 50px;
-    border-radius: 50%; /* Circular avatar */
+    border-radius: 25%;
     overflow: hidden;
 }
 .post-avatar img {
@@ -73,21 +88,73 @@ nav ul li a {
     color: #D3D4D5; 
 }
 #likeButton {
-    align-self: flex-end;
-    border: none;
-    background: none;
+	position: relative;
+	display: inline-block;
     color: #e74c3c;
     font-size: 24px;
     cursor: pointer;
+	background-color: #0D131B;
+	border-radius: 8px;
 }
 .post-status-bar span {
     font-size: 12px;
     color: #999; 
 }
 
+/* ================================ FOOTER ================================ */
 footer {
 	position: fixed;
 	font-size: 13px;
+	color:#C5C3C0;
 	left: 10px;
 	bottom: 0;
+}
+
+/* ============================= LOGIN/REGISTER ============================= */
+.login-register {
+	display: flex;
+	position: absolute;
+	flex-direction: column;
+	background-color: #0D131B;
+	color:#C5C3C0;
+	border-radius: 8px;
+	width: 600px;
+	height: 400px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+.login-area, .register-area {
+	margin: 20px;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    background-color: #2C3E50;
+    color: #ecf0f1;
+    border: 1px solid #34495e;
+    border-radius: 4px;
+    font-size: 16px;
+}
+button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    background: linear-gradient(to right, #FF6347, #ba3b25);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+button[type="submit"]:hover {
+    background: linear-gradient(to right, #ff8772, #ba3b25);
+}
+.login-area h2, .register-area h2 {
+	font-family: 'MotivaSansThin', Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	color: #FF6347;
 }
