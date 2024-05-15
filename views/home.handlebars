@@ -10,7 +10,8 @@
 			<form action="/posts" method="POST">
 				<!-- title input field name = "title" -->
 				<!-- text area input field name = "content" -->
-
+				<input type="text" name="title" placeholder="Title">
+				<input type="text" name="content" placeholder="Content">
 				<div class="form-actions">
 					<button type="button" class="emoji-button" onclick="toggleEmojiPanel()">😀</button>
 					<button type="submit" class="post-button">Post</button>
@@ -20,6 +21,7 @@
 			<div id="emoji-container" class="emoji-panel" style="display: none;">
 				<!-- input field for the emoji search, use oninput="searchEmojis() -->
 				<!-- a div, id = "emoji-grid" -->
+				<div id="emoji-grid"></div>
 			</div>
 		</section>
 	{{/if}}
@@ -43,7 +45,6 @@
 
 {{! JavaScript for Emoji Integration }}
 <script>
-	console.log(posts);
 /*
  You want to show a subset of the emojis. About 200. However,
  you also want the user to be able to search all emojis,
@@ -51,7 +52,7 @@
  that you have them.
 */
 
-let allEmojis = [];  // Global list to hold all emojis
+let allEmojis = [];  // Global list to hold all emojis\
 
 function toggleEmojiPanel() {
 	const container = document.getElementById('emoji-container');
