@@ -98,6 +98,7 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 app.get('/', (req, res) => {
 	const posts = getPosts();
 	const user = getCurrentUser(req) || {};
+	console.log(user);
 	res.render('home', { posts, user});
 });
 
@@ -127,12 +128,33 @@ app.get('/post/:id', (req, res) => {
 });
 app.post('/posts', (req, res) => {
 	// TODO: Add a new post and redirect to home
+	try {
+		let title = req.body.title;
+		let content = req.body.content;
+		let user = users.find(u => u.id === req.session.userId);
+		addPost(title, content, user);
+		res.redirect('/');
+	} catch (error) {
+		console.error(error);
+	}
 });
 app.post('/like/:id', (req, res) => {
 	// TODO: Update post likes
+	try {
+		updatePostLikes(req,res);
+		res.sendStatus(200);
+	} catch (error) {
+		console.error(error);
+		res.send(500);
+	}
+	
 });
 app.get('/profile', isAuthenticated, (req, res) => {
 	// TODO: Render profile page
+	let userId = req.session.userId;
+	const user = users.find(user => user.id === userId);
+
+	res.render('profile', {user});
 });
 app.get('/avatar/:username', (req, res) => {
 	// TODO: Serve the avatar image for the user
@@ -144,12 +166,10 @@ app.post('/register', (req, res) => {
 });
 app.post('/login', (req, res) => {
 	// TODO: Login a user
-	
 	try {
 		loginUser(req, res);
-		
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 	}
 	
 });
@@ -159,6 +179,11 @@ app.get('/logout', (req, res) => {
 });
 app.post('/delete/:id', isAuthenticated, (req, res) => {
 	// TODO: Delete a post if the current user is the owner
+	try {
+		deletePost(req, res);
+	} catch (error) {
+		console.log(error);
+	}
 });
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -174,10 +199,8 @@ app.listen(PORT, () => {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Example data for posts and users
-let posts = [
-	{ id: 1, title: 'Sample Post', content: 'This is a sample post.', username: 'SampleUser', timestamp: '2024-01-01 10:00', likes: 0 },
-	{ id: 2, title: 'Another Post', content: 'This is another sample post.', username: 'AnotherUser', timestamp: '2024-01-02 12:00', likes: 0 },
-];
+let posts = [];
+
 let users = [
 	{ id: 1, username: 'SampleUser', avatar_url: undefined, memberSince: '2024-01-01 08:00' },
 	{ id: 2, username: 'AnotherUser', avatar_url: undefined, memberSince: '2024-01-02 09:00' },
@@ -206,17 +229,12 @@ function findUserById(userId) {
 // Function to add a new user
 function addUser(username) {
 	// TODO: Create a new user object and add to users array
-	let date = new Date();
-	const year = date.getFullYear();
-	const month = date.getMonth();
-	const day = date.getDay();
-	const hour = date.getHours();
-	const minute = date.getMinutes();
+	let timeStamp = getNewTimeStamp();
 	let user = {
 		id: users.length + 1,
 		username: username,
 		avatar_url: undefined,
-		memberSince: year + '-' + month + '-' + day + ' ' + hour + ':' + minute,
+		memberSince: timeStamp,
 	}
 	users.push(user);
 	return user;
@@ -237,8 +255,7 @@ function registerUser(req, res) {
 	// TODO: Register a new user and redirect appropriately
 	let userName = req.body.userName;
 	let user = addUser(userName);	
-	console.log(users);
-	req.session.user = user;
+	// req.session.user = user;
 	req.session.userId = user.id;
 	req.session.loggedIn = true;
 	req.session.save((err) => {
@@ -257,7 +274,7 @@ function loginUser(req, res) {
 	let userName = req.body.userName;
 		let user = findUserByUsername(userName);
 		if (user) {
-			req.session.user = user;
+			// req.session.user = user;
 			req.session.userId = user.id;
 			req.session.loggedIn = true;
 			req.session.save((err) => {
@@ -288,6 +305,46 @@ function renderProfile(req, res) {
 // Function to update post likes
 function updatePostLikes(req, res) {
 	// TODO: Increment post likes if conditions are met
+	try {
+		const postId = parseInt(req.params.id);
+		let post = posts.find(post => post.id === postId);
+		let userId = req.session.userId;
+		let currentUser = users.find(user => user.id === userId);
+		if (!('postsLikedId' in currentUser)) {
+			currentUser.postsLikedId = [];
+		}
+		let index = currentUser.postsLikedId.indexOf(postId);
+		if (index !== -1) {
+			currentUser.postsLikedId.splice(index, 1);
+			post.likes--;
+		} else {
+			currentUser.postsLikedId.push(postId);
+			post.likes++;
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+// Function to delete post
+function deletePost(req, res) {
+	try {
+		const postId = parseInt(req.params.id);
+		let post = posts.find(post => post.id === postId);
+		let userId = req.session.userId;
+		let user = users.find(user => user.id === userId);
+		let userIndex = user.posts.indexOf(post);
+		let postsIndex = posts.indexOf(post);
+		if (postsIndex !== -1 && userIndex !== -1) {	// TODO: CONTINUE HERE
+			posts.splice(postsIndex, 1);
+			user.posts.splice(userIndex, 1);
+			res.sendStatus(200);
+		} else {
+			throw new Error("post does not exist");
+		}
+	} catch (error) {
+		console.log(error);
+	}
 }
 
 // Function to handle avatar generation and serving
@@ -298,7 +355,11 @@ function handleAvatar(req, res) {
 // Function to get the current user from session
 function getCurrentUser(req) {
 	// TODO: Return the user object if the session user ID matches
-	return req.session.user;
+	let user = users.find(user => user.id === req.session.userId);
+	if (user) {
+		return user;
+	} 
+	return null;
 }
 
 // Function to get all posts, sorted by latest first
@@ -309,6 +370,19 @@ function getPosts() {
 // Function to add a new post
 function addPost(title, content, user) {
 	// TODO: Create a new post object and add to posts array
+	let post = {
+		id: posts.length,
+		title: title,
+		content: content,
+		username: user.username,
+		timestamp: getNewTimeStamp(),
+		likes: 0,
+	}
+	if (!('posts' in user)) {
+		user.posts = [];
+	}
+	user.posts.push(post);
+	posts.push(post);
 }
 
 // Function to generate an image avatar
@@ -320,4 +394,15 @@ function generateAvatar(letter, width = 100, height = 100) {
 	// 3. Draw the background color
 	// 4. Draw the letter in the center
 	// 5. Return the avatar as a PNG buffer
+}
+
+function getNewTimeStamp() {
+	let date = new Date();
+	const year = date.getFullYear();
+	const month = date.getMonth();
+	const day = date.getDay();
+	const hour = date.getHours();
+	const minute = date.getMinutes();
+	let timeStamp = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+	return timeStamp;
 }
