@@ -130,9 +130,8 @@ app.post('/posts', (req, res) => {
 	try {
 		let title = req.body.title;
 		let content = req.body.content;
-		let user = req.session.user;
+		let user = users.find(u => u.id === req.session.userId);
 		addPost(title, content, user);
-		
 		res.redirect('/');
 	} catch (error) {
 		console.error(error);
@@ -142,7 +141,7 @@ app.post('/like/:id', (req, res) => {
 	// TODO: Update post likes
 	try {
 		updatePostLikes(req,res);
-		
+		res.sendStatus(200);
 	} catch (error) {
 		console.error(error);
 		res.send(500);
@@ -152,7 +151,6 @@ app.post('/like/:id', (req, res) => {
 app.get('/profile', isAuthenticated, (req, res) => {
 	// TODO: Render profile page
 	const user = getCurrentUser(req) || {};
-	console.log(user);
 	res.render('profile', {user});
 });
 app.get('/avatar/:username', (req, res) => {
@@ -327,7 +325,11 @@ function handleAvatar(req, res) {
 // Function to get the current user from session
 function getCurrentUser(req) {
 	// TODO: Return the user object if the session user ID matches
-	return req.session.user;
+	let user = users.find(user => user.id === req.session.userId);
+	if (user) {
+		return user;
+	} 
+	return null;
 }
 
 // Function to get all posts, sorted by latest first
