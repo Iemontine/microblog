@@ -21,6 +21,7 @@
 			<div id="emoji-container" class="emoji-panel" style="display: none;">
 				<!-- input field for the emoji search, use oninput="searchEmojis() -->
 				<!-- a div, id = "emoji-grid" -->
+				<div id="emoji-grid"></div>
 			</div>
 		</section>
 	{{/if}}
@@ -44,7 +45,6 @@
 
 {{! JavaScript for Emoji Integration }}
 <script>
-	console.log(posts);
 /*
  You want to show a subset of the emojis. About 200. However,
  you also want the user to be able to search all emojis,
@@ -52,7 +52,7 @@
  that you have them.
 */
 
-let allEmojis = [];  // Global list to hold all emojis
+let allEmojis = [];  // Global list to hold all emojis\
 
 function toggleEmojiPanel() {
 	const container = document.getElementById('emoji-container');

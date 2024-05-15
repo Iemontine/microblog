@@ -12,20 +12,17 @@
 			<!-- everything that is shown in the status bar -->
 			<!-- Heart = ♥ -->
 			<!-- font awesome  trashcan = <i class="fas fa-trash-alt"> </i>-->
+			{{#ifCond this.username user.username}}
+			<button class="deleteButton" data-id={{this.id}} onclick="handleDeleteClick(event)"><i class="fas fa-trash-alt"> </i></button>
+			{{else}}
 			<button class="likeButton" data-id={{this.id}} onclick="handleLikeClick(event)">♥</button>
-
+			{{/ifCond}}
 			<span class="likes">{{this.likes}} likes</span>
 			<span>Posted by {{this.username}} on {{this.timestamp}}</span>
 		</div>        
 	</div>
 </div>
 <script>
-
-	{{!-- document.addEventListener('click', function(event) {
-		if (event.target.classList.contains('likeButton')) {
-			handleLikeClick(event);
-		} 
-	}) --}}
 
 	function handleLikeClick(event) {
 		const postId = event.target.getAttribute('data-id');
@@ -47,9 +44,21 @@
 	}
 
 	function handleDeleteClick(event) {
-		const buttonElement = event.target.closest('.delete-button');
+		const buttonElement = event.target.closest('.deleteButton');
 		const postId = buttonElement.getAttribute('data-id');        
+		try {
+			fetch('/delete/' + postId, {
+				method: 'POST',
+			})
+			.then(res => {
+				console.log(res);
+				window.location.reload();
 
+			})
+			.catch(error => console.error(error))
+		} catch (error) {
+			console.error(error);
+		}
 		// you might want to "fetch" something...        
 		
 	}    

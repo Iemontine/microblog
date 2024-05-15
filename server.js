@@ -98,6 +98,7 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 app.get('/', (req, res) => {
 	const posts = getPosts();
 	const user = getCurrentUser(req) || {};
+	console.log(user);
 	res.render('home', { posts, user});
 });
 
@@ -150,7 +151,9 @@ app.post('/like/:id', (req, res) => {
 });
 app.get('/profile', isAuthenticated, (req, res) => {
 	// TODO: Render profile page
-	const user = getCurrentUser(req) || {};
+	let userId = req.session.userId;
+	const user = users.find(user => user.id === userId);
+
 	res.render('profile', {user});
 });
 app.get('/avatar/:username', (req, res) => {
@@ -176,6 +179,11 @@ app.get('/logout', (req, res) => {
 });
 app.post('/delete/:id', isAuthenticated, (req, res) => {
 	// TODO: Delete a post if the current user is the owner
+	try {
+		deletePost(req, res);
+	} catch (error) {
+		console.log(error);
+	}
 });
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -247,7 +255,7 @@ function registerUser(req, res) {
 	// TODO: Register a new user and redirect appropriately
 	let userName = req.body.userName;
 	let user = addUser(userName);	
-	req.session.user = user;
+	// req.session.user = user;
 	req.session.userId = user.id;
 	req.session.loggedIn = true;
 	req.session.save((err) => {
@@ -266,7 +274,7 @@ function loginUser(req, res) {
 	let userName = req.body.userName;
 		let user = findUserByUsername(userName);
 		if (user) {
-			req.session.user = user;
+			// req.session.user = user;
 			req.session.userId = user.id;
 			req.session.loggedIn = true;
 			req.session.save((err) => {
@@ -300,7 +308,8 @@ function updatePostLikes(req, res) {
 	try {
 		const postId = parseInt(req.params.id);
 		let post = posts.find(post => post.id === postId);
-		let currentUser = req.session.user;
+		let userId = req.session.userId;
+		let currentUser = users.find(user => user.id === userId);
 		if (!('postsLikedId' in currentUser)) {
 			currentUser.postsLikedId = [];
 		}
@@ -314,6 +323,27 @@ function updatePostLikes(req, res) {
 		}
 	} catch (error) {
 		console.error(error);
+	}
+}
+
+// Function to delete post
+function deletePost(req, res) {
+	try {
+		const postId = parseInt(req.params.id);
+		let post = posts.find(post => post.id === postId);
+		let userId = req.session.userId;
+		let user = users.find(user => user.id === userId);
+		let userIndex = user.posts.indexOf(post);
+		let postsIndex = posts.indexOf(post);
+		if (postsIndex !== -1 && userIndex !== -1) {	// TODO: CONTINUE HERE
+			posts.splice(postsIndex, 1);
+			user.posts.splice(userIndex, 1);
+			res.sendStatus(200);
+		} else {
+			throw new Error("post does not exist");
+		}
+	} catch (error) {
+		console.log(error);
 	}
 }
 

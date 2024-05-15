@@ -19,7 +19,7 @@
 	{{#if user.posts}}
 		<ul>
 			{{#each user.posts}}
-				{{> post this}}
+				{{> post this user=../user}}
 			{{/each}}
 		</ul>
 	{{else}}
