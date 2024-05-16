@@ -41,11 +41,20 @@ ul li a {
 	text-decoration: none;
 	list-style-type: none;
 	list-style: none;
+	text-transform: uppercase;
 	font-family: 'MotivaSansMedium', Arial, Helvetica, sans-serif;
 }
-
+header .profile-picture {
+	width: 40px;
+	height: 40px;
+	border-radius: 10%;
+	border-width: 2px;
+	border-style: solid;
+	overflow: hidden;
+	vertical-align: middle;
+}
 /* ================================ POSTS ================================ */
-.post {
+.post, form {
 	display: flex;
 	flex-direction: column;
 	background-color: #0D131B;
@@ -57,7 +66,7 @@ ul li a {
 	margin-top: 30px;
 }
 @media (max-width: 925px) {
-	.post {
+	.post, form {
 		margin-left: 10px;
 		margin-right: 10px;
 	}
@@ -86,7 +95,7 @@ ul li a {
 .posts-list h1, .post-content h1 {
 	font-size: 20px;
 	margin-top: 0;
-	color: #D3D4D5; 
+	color: #D3D4D5;
 }
 .post-status-bar button {
 	position: relative;
@@ -99,7 +108,7 @@ ul li a {
 }
 .post-status-bar span {
 	font-size: 12px;
-	color: #999; 
+	color: #999;
 }
 
 /* ================================ USER-POSTS ================================ */
@@ -109,19 +118,83 @@ ul li a {
 	font-weight: bold;
 	font-family: 'MotivaSansMedium', Arial, Helvetica, sans-serif;
 }
+.user-posts p {
+	text-align: center;
+	color:#C5C3C0;
+	font-weight: bold;
+	font-family: 'MotivaSansThin', Arial, Helvetica, sans-serif;
+}
 
 /* ================================ USER FORM ================================ */
-form input {
-	max-width: 925px;
-	margin: 0px auto;
+.post-form {
+    display: flex;
+    flex-direction: column;
+    background-color: #0D131B;
+    color: #C5C3C0;
+    border-radius: 8px;
+    width: 600px;
+	height: fit-content;
+    margin: 20px auto;
+}
+.post-form form {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+	gap: 10px;
+}
+
+#profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+	gap: 10px;
+}
+.post-form .profile-picture {
+    width: 50px;
+    height: 50px;
+    border-radius: 10%;
+	border-width: 2px;
+	border-style: solid;
+	overflow: hidden;
+}
+.post-form #emoji-button {
 	position: relative;
+	display: inline-block;
+	color: #e74c3c;
+	font-size: 20px;
+	cursor: pointer;
+	background-color: #0D131B;
+	border-radius: 8px;
 }
-@media (max-width: 925px) {
-	form input  {
-		margin-left: 10px;
-		margin-right: 10px;
-	}
+
+.post-form input[type="text"] {
+    padding: 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    background-color: #2C3E50;
+    color: #ecf0f1;
+    border: 1px solid #34495e;
+    border-radius: 4px;
+    font-size: 16px;
 }
+.post-form input[name="content"] {
+	padding: 10px;
+	margin: 10px 0;
+	box-sizing: border-box;
+	background-color: #2C3E50;
+	color: #ecf0f1;
+	border: 1px solid #34495e;
+	border-radius: 4px;
+	font-size: 16px;
+	min-height: 100px; 
+	text-overflow:clip;
+	text-align: left;
+	resize: both;
+}
+.post-form #form-actions {
+    grid-column: 1 / -1;
+}
+
 
 /* ================================ FOOTER ================================ */
 footer p {
@@ -141,7 +214,7 @@ footer p {
 	color:#C5C3C0;
 	border-radius: 8px;
 	width: 600px;
-	height: 400px;
+	height: fit-content;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
