@@ -127,32 +127,34 @@ header .profile-picture {
 
 /* ================================ USER FORM ================================ */
 .post-form {
-    display: flex;
-    flex-direction: column;
-    background-color: #0D131B;
-    color: #C5C3C0;
-    border-radius: 8px;
-    width: 600px;
+	width: 100%;
+	max-width: 600px;
+	display: flex;
+	flex-direction: column;
+	background-color: #0D131B;
+	color: #C5C3C0;
+	border-radius: 8px;
 	height: fit-content;
-    margin: 20px auto;
+	margin: 20px auto;
 }
 .post-form form {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: start;
 	gap: 10px;
+	margin: 20px;
 }
 
 #profile-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 	gap: 10px;
 }
 .post-form .profile-picture {
-    width: 50px;
-    height: 50px;
-    border-radius: 10%;
+	width: 50px;
+	height: 50px;
+	border-radius: 10%;
 	border-width: 2px;
 	border-style: solid;
 	overflow: hidden;
@@ -167,32 +169,32 @@ header .profile-picture {
 	border-radius: 8px;
 }
 
-.post-form input[type="text"] {
+#input-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.post-form input[name="title"], .post-form textarea[name="content"] {
+	margin: 0;
+    width: 100%;
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
     padding: 10px;
-    margin: 10px 0;
-    box-sizing: border-box;
     background-color: #2C3E50;
     color: #ecf0f1;
     border: 1px solid #34495e;
     border-radius: 4px;
     font-size: 16px;
 }
-.post-form input[name="content"] {
-	padding: 10px;
-	margin: 10px 0;
-	box-sizing: border-box;
-	background-color: #2C3E50;
-	color: #ecf0f1;
-	border: 1px solid #34495e;
-	border-radius: 4px;
-	font-size: 16px;
-	min-height: 100px; 
-	text-overflow:clip;
-	text-align: left;
-	resize: both;
+
+.post-form textarea[name="content"] {
+	margin-top: 10px;
+    min-height: 100px;
+    text-overflow: clip;
+    resize: none;
+	font-size: 13px;
 }
 .post-form #form-actions {
-    grid-column: 1 / -1;
+	grid-column: 1 / -1;
 }
 
 
@@ -207,13 +209,14 @@ footer p {
 
 /* ============================= LOGIN/REGISTER ============================= */
 .login-register {
+	width: 100%;
 	display: flex;
 	position: absolute;
 	flex-direction: column;
 	background-color: #0D131B;
 	color:#C5C3C0;
 	border-radius: 8px;
-	width: 600px;
+	max-width: 600px;
 	height: fit-content;
 	top: 50%;
 	left: 50%;
@@ -233,6 +236,7 @@ input[type="text"] {
 	border: 1px solid #34495e;
 	border-radius: 4px;
 	font-size: 16px;
+	font-family: 'MotivaSansThin', Arial, Helvetica, sans-serif;
 }
 button[type="submit"] {
 	width: 100%;

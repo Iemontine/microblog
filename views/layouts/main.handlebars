@@ -33,11 +33,11 @@
 				{{/if}}
 			</ul>
 		</nav>
-		<img{{#if user.avatar_url}}
-			src="{{user.avatar_url}}" alt="Profile Picture"
-		{{else}}
-			src="../default-avatar.png" alt="Default Profile Picture"
-		{{/if}} class="profile-picture">
+		{{#if loggedIn}}
+			{{#if user.avatar_url}}
+				<img src="{{user.avatar_url}}" alt="Profile Picture" class="profile-picture">
+			{{/if}}
+		{{/if}}
 	</header>
 
 	{{{body}}}
