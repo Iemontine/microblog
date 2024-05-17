@@ -63,18 +63,4 @@
 		// you might want to "fetch" something...        
 	} 
 
-
-	function getAvatar(event) {
-		console.log("EFIS");
-		const username = event.target.getAttribute('data-username');
-		try {
-			fetch('/avatar/' + username)
-			.then(res => res.json())
-			.then(avatarUrl => console.log(avatarUrl))
-			.catch(error => console.error(error))
-		} catch(error) {
-			console.error(error);
-		}
-	}
-
 </script>

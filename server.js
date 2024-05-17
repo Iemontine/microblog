@@ -286,7 +286,6 @@ function loginUser(req, res) {
 					console.error('Error saving session:', err);
 					res.status(500).send('Internal Server Error');
 				} else {
-					
 					res.redirect('/');
 				}
 			})
@@ -352,7 +351,7 @@ function deletePost(req, res) {
 			throw new Error("post does not exist");
 		}
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 	}
 }
 
@@ -365,11 +364,7 @@ function handleAvatar(req, res) {
 	// TODO: Generate and serve the user's avatar image
 	const username = req.body.userName;
 	const user = users.find(user => user.username === username);
-	console.log(username);
-	console.log(user);
-	if (user.avatar_url) {
-		res.json(avatar_url);
-	} else {
+	if (!user.avatar_url) {
 		const width = 100;
 		const height = 100;
 	
@@ -397,7 +392,6 @@ function handleAvatar(req, res) {
 		stream.pipe(out);
 		out.on('finish', () => console.log('The image was created.'));
 		user.avatar_url = 'images/' + username + '.png';
-		console.log(user);
 	}
 }
 
