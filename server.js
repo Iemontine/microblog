@@ -1,8 +1,9 @@
 const express = require('express');
 const expressHandlebars = require('express-handlebars');
 const session = require('express-session');
-const canvas = require('canvas');
-
+const cvs = require('canvas');
+const emoji = require('emoji.json');
+const fs = require('fs');
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -98,7 +99,6 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 app.get('/', (req, res) => {
 	const posts = getPosts();
 	const user = getCurrentUser(req) || {};
-	console.log(user);
 	res.render('home', { posts, user});
 });
 
@@ -151,27 +151,29 @@ app.post('/like/:id', (req, res) => {
 });
 app.get('/profile', isAuthenticated, (req, res) => {
 	// TODO: Render profile page
-	let userId = req.session.userId;
-	const user = users.find(user => user.id === userId);
-
-	res.render('profile', {user});
+	renderProfile(req, res);
 });
 app.get('/avatar/:username', (req, res) => {
 	// TODO: Serve the avatar image for the user
+	handleAvatar(req, res);
 });
 app.post('/register', (req, res) => {
 	// TODO: Register a new user
-	registerUser(req, res);
-	
+	try {
+		registerUser(req, res);
+		handleAvatar(req, res);
+	} catch (error) {
+		console.error(error);
+	}
 });
 app.post('/login', (req, res) => {
 	// TODO: Login a user
 	try {
 		loginUser(req, res);
+		handleAvatar(req,res);
 	} catch (error) {
 		console.error(error);
 	}
-	
 });
 app.get('/logout', (req, res) => {
 	// TODO: Logout the user
@@ -185,7 +187,9 @@ app.post('/delete/:id', isAuthenticated, (req, res) => {
 		console.log(error);
 	}
 });
-
+app.get('/emoji', (req, res) => {
+	res.json(emoji);
+});
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Server Activation
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -305,6 +309,10 @@ function logoutUser(req, res) {
 // Function to render the profile page
 function renderProfile(req, res) {
 	// TODO: Fetch user posts and render the profile page
+	let userId = req.session.userId;
+	const user = users.find(user => user.id === userId);
+
+	res.render('profile', {user});
 }
 
 // Function to update post likes
@@ -348,13 +356,48 @@ function deletePost(req, res) {
 			throw new Error("post does not exist");
 		}
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 	}
+}
+
+function randomColor() {
+  return '#' + Math.floor(Math.random()*16777215).toString(16);
 }
 
 // Function to handle avatar generation and serving
 function handleAvatar(req, res) {
 	// TODO: Generate and serve the user's avatar image
+	const username = req.body.userName;
+	const user = users.find(user => user.username === username);
+	if (!user.avatar_url) {
+		const width = 100;
+		const height = 100;
+	
+		const canvas = cvs.createCanvas(width, height);
+		const context = canvas.getContext('2d');
+	
+		// Draw a red rectangle
+		context.fillStyle = randomColor();
+		context.fillRect(0, 0, 100, 100);
+	
+		context.fillStyle = '#FFFFFF'; // White color for text
+    context.font = '70px Arial';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+
+    // Get the first letter of the username
+    const firstLetter = username.charAt(0).toUpperCase();
+
+    // Draw the letter
+    context.fillText(firstLetter, width / 2, height / 2);
+		// Save the canvas as an image
+		const url = './public/images/' + username + '.png';
+		const out = fs.createWriteStream(url);
+		const stream = canvas.createPNGStream();
+		stream.pipe(out);
+		out.on('finish', () => console.log('The image was created.'));
+		user.avatar_url = 'images/' + username + '.png';
+	}
 }
 
 // Function to get the current user from session
@@ -382,6 +425,7 @@ function addPost(title, content, user) {
 		username: user.username,
 		timestamp: getNewTimeStamp(),
 		likes: 0,
+		avatar_url: user.avatar_url,
 	}
 	if (!('posts' in user)) {
 		user.posts = [];
