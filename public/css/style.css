@@ -65,12 +65,6 @@ header .profile-picture {
 	margin: 0px auto;
 	margin-top: 30px;
 }
-@media (max-width: 925px) {
-	.post, form {
-		margin-left: 10px;
-		margin-right: 10px;
-	}
-}
 .post-content p {
 	margin-top: 0;
 	color: #D3D4D5;
@@ -184,6 +178,7 @@ header .profile-picture {
     border: 1px solid #34495e;
     border-radius: 4px;
     font-size: 16px;
+	font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
 }
 
 .post-form textarea[name="content"] {
@@ -248,6 +243,7 @@ button[type="submit"] {
 	color: white;
 	font-size: 16px;
 	cursor: pointer;
+	font-family: 'MotivaSansThin', Arial, Helvetica, sans-serif;
 }
 button[type="submit"]:hover {
 	background: linear-gradient(to right, #ff8772, #ba3b25);
