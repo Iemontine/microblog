@@ -1,25 +1,22 @@
 {{! Partial for a single post }}
 <div class="post">
-	<div class="post-avatar">
-		<!-- the user's avatar -->
+	<div class="post-avatar" onload="getAvatar(event)">
+		<img src={{this.avatar_url}} alt=this.username>
 	</div>
 	<div class="post-content preserve-newlines">
-		<!-- the post -->
 		<h1>{{this.title}}</h1>
-		<h4>{{this.username}}</h4>
 		<p>{{this.content}}</p>
 		<div class="post-status-bar">
 			<!-- everything that is shown in the status bar -->
-			<!-- Heart = ♥ -->
 			<!-- font awesome  trashcan = <i class="fas fa-trash-alt"> </i>-->
 			{{#ifCond this.username user.username}}
-			<button class="deleteButton" data-id={{this.id}} onclick="handleDeleteClick(event)"><i class="fas fa-trash-alt"> </i></button>
+				<button class="deleteButton" data-id={{this.id}} onclick="handleDeleteClick(event)"><i class="fas fa-trash-alt"> </i></button>
 			{{else}}
-			<button class="likeButton" data-id={{this.id}} onclick="handleLikeClick(event)">♥</button>
+				<button class="likeButton" data-id={{this.id}} onclick="handleLikeClick(event)">♥</button>
 			{{/ifCond}}
 			<span class="likes">{{this.likes}} likes</span>
 			<span>Posted by {{this.username}} on {{this.timestamp}}</span>
-		</div>        
+		</div>
 	</div>
 </div>
 <script>
@@ -33,19 +30,17 @@
 			.then(res => {
 				console.log(res);
 				window.location.reload();
-
 			})
 			.catch(error => console.error(error))
 		} catch (error) {
 			console.error(error);
 		}
-
-		// you might want to "fetch" something...        
+		// you might want to "fetch" something...
 	}
 
 	function handleDeleteClick(event) {
 		const buttonElement = event.target.closest('.deleteButton');
-		const postId = buttonElement.getAttribute('data-id');        
+		const postId = buttonElement.getAttribute('data-id');
 		try {
 			fetch('/delete/' + postId, {
 				method: 'POST',
@@ -58,7 +53,6 @@
 		} catch (error) {
 			console.error(error);
 		}
-		// you might want to "fetch" something...        
-		
-	}    
+		// you might want to "fetch" something...
+	} 
 </script>
