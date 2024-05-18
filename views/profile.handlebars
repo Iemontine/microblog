@@ -1,14 +1,14 @@
 {{! Use the main layout }}
 {{!< main }}
 
-<div class="profile-container">	
+<div class="profile-container">
+	{{!-- TODO --}}
 </div>
 
 <section class="user-posts">
-	<!-- you can call posts tweets, or truths, or whatever, these are neologisms. Choose your own new in server.js -->
 	<h2>Your {{{postNeoType}}}s</h2>
 	
-	<!-- you'll need to make this conditaionl and #each expression work -->
+	<!-- Conditionally show all of the user's posts -->
 	{{#if user.posts}}
 		<ul>
 			{{#each user.posts}}

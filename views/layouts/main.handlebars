@@ -4,7 +4,6 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">   
 	
-	<!-- font awesome for the trashcan icon --> 
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">    
 	
 	<title>{{{appName}}}</title>
@@ -19,15 +18,11 @@
 		</div>
 		<nav>
 			<ul>
-				<!-- conditional rendering based on variables - Is the user logged in?-->
 				<li><a href="/">HOME</a></li>
+				{{!-- Conditional Rendering --}}
 				{{#if loggedIn}}
 					<li><a href="/profile">{{user.username}}</a></li>
-
-					{{!-- TODO: get user.username to be uppercase when rendered --}}
 					<li><a href="/logout">LOGOUT</a></li>
-						
-
 				{{else}}
 					<li><a href="/login">LOGIN</a></li>
 				{{/if}}
@@ -35,7 +30,9 @@
 		</nav>
 		{{#if loggedIn}}
 			{{#if user.avatar_url}}
-				<img src="{{user.avatar_url}}" alt="Profile Picture" class="profile-picture">
+				<img src="{{user.avatar_url}}" 
+					alt="Profile Picture" 
+					class="profile-picture">
 			{{/if}}
 		{{/if}}
 	</header>
@@ -52,8 +49,8 @@
 			const links = document.querySelectorAll('nav ul li a');
 			links.forEach(link => {
 				if (link.getAttribute('href') === currentPath) {
-					link.style.color = '#FF6347'; // Change font color
-					link.style.textDecoration = 'underline'; // Add underline
+					link.style.color = '#FF6347';			// Change font color
+					link.style.textDecoration = 'underline';	// Add underline
 				}
 			});
 		});
