@@ -3,13 +3,10 @@
 
 {{! New Post Submission Form }}
 <section class="content-container">
+	<!-- Show the create post form when logged in -->
 	{{#if loggedIn}}
-		<!-- show the create post form when logged in -->
 		<section class="post-form">
-			<!-- make a header here -->
 			<form action="/posts" method="POST">
-				<!-- title input field name = "title" -->
-				<!-- text area input field name = "content" -->
 				<div id="profile-container">
 					<img{{#if user.avatar_url}}
 							src="{{user.avatar_url}}" alt="Profile Picture"
@@ -28,8 +25,6 @@
 			</form>
 
 			<div id="emoji-container" class="emoji-panel" style="display: none;">
-				<!-- input field for the emoji search, use oninput="searchEmojis() -->
-				<!-- a div, id = "emoji-grid" -->
 				<input id="emoji-search" type="text" name="emojiSearch" placeholder="Search Emoji">
 				<div id="emoji-grid"></div>
 			</div>

@@ -119,9 +119,9 @@ app.get('/profile', isAuthenticated, (req, res) => {
 	renderProfile(req, res);
 });
 
-// Logout route: log out user
+// Avatar route: serve user avatar
 app.get('/avatar/:username', (req, res) => {
-	handleAvatar(req, res);
+	// unused
 });
 
 // Post route: add a new post
