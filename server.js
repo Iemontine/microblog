@@ -127,7 +127,6 @@ app.get('/post/:id', (req, res) => {
 	// TODO: Render post detail page
 });
 app.post('/posts', (req, res) => {
-	// TODO: Add a new post and redirect to home
 	try {
 		let title = req.body.title;
 		let content = req.body.content;
@@ -139,7 +138,6 @@ app.post('/posts', (req, res) => {
 	}
 });
 app.post('/like/:id', (req, res) => {
-	// TODO: Update post likes
 	try {
 		updatePostLikes(req,res);
 		res.sendStatus(200);
@@ -150,15 +148,12 @@ app.post('/like/:id', (req, res) => {
 	
 });
 app.get('/profile', isAuthenticated, (req, res) => {
-	// TODO: Render profile page
 	renderProfile(req, res);
 });
 app.get('/avatar/:username', (req, res) => {
-	// TODO: Serve the avatar image for the user
 	handleAvatar(req, res);
 });
 app.post('/register', (req, res) => {
-	// TODO: Register a new user
 	try {
 		registerUser(req, res);
 		handleAvatar(req, res);
@@ -167,7 +162,6 @@ app.post('/register', (req, res) => {
 	}
 });
 app.post('/login', (req, res) => {
-	// TODO: Login a user
 	try {
 		loginUser(req, res);
 		handleAvatar(req,res);
@@ -176,11 +170,9 @@ app.post('/login', (req, res) => {
 	}
 });
 app.get('/logout', (req, res) => {
-	// TODO: Logout the user
 	logoutUser(req, res);
 });
 app.post('/delete/:id', isAuthenticated, (req, res) => {
-	// TODO: Delete a post if the current user is the owner
 	try {
 		deletePost(req, res);
 	} catch (error) {
@@ -370,33 +362,14 @@ function handleAvatar(req, res) {
 	const username = req.body.userName;
 	const user = users.find(user => user.username === username);
 	if (!user.avatar_url) {
-		const width = 100;
-		const height = 100;
-	
-		const canvas = cvs.createCanvas(width, height);
-		const context = canvas.getContext('2d');
-	
-		// Draw a red rectangle
-		context.fillStyle = randomColor();
-		context.fillRect(0, 0, 100, 100);
-	
-		context.fillStyle = '#FFFFFF'; // White color for text
-    context.font = '70px Arial';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-
-    // Get the first letter of the username
-    const firstLetter = username.charAt(0).toUpperCase();
-
-    // Draw the letter
-    context.fillText(firstLetter, width / 2, height / 2);
-		// Save the canvas as an image
+		const firstLetter = username.charAt(0).toUpperCase();
 		const url = './public/images/' + username + '.png';
 		const out = fs.createWriteStream(url);
-		const stream = canvas.createPNGStream();
-		stream.pipe(out);
-		out.on('finish', () => console.log('The image was created.'));
-		user.avatar_url = 'images/' + username + '.png';
+
+		user.avatar_url = '/images/' + username + '.png';
+		pngStream = generateAvatar(firstLetter);
+		pngStream.pipe(out);
+
 	}
 }
 
@@ -436,15 +409,24 @@ function addPost(title, content, user) {
 
 // Function to generate an image avatar
 function generateAvatar(letter, width = 100, height = 100) {
-	// TODO: Generate an avatar image with a letter
-	// Steps:
-	// 1. Choose a color scheme based on the letter
-	// 2. Create a canvas with the specified width and height
-	// 3. Draw the background color
-	// 4. Draw the letter in the center
-	// 5. Return the avatar as a PNG buffer
+	const canvas = cvs.createCanvas(width, height);
+	const context = canvas.getContext('2d');
+
+	// Draw a red rectangle
+	context.fillStyle = randomColor();
+	context.fillRect(0, 0, 100, 100);
+	context.fillStyle = '#FFFFFF'; // White color for text
+	context.font = '70px Arial';
+	context.textAlign = 'center';
+	context.textBaseline = 'middle';
+
+	// Draw the letter
+	context.fillText(letter, width / 2, height / 2);	
+	const stream = canvas.createPNGStream();
+	return stream;
 }
 
+// Creates new time in the format provided
 function getNewTimeStamp() {
 	let date = new Date();
 	const year = date.getFullYear();
