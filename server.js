@@ -2,7 +2,6 @@ const express = require('express');
 const expressHandlebars = require('express-handlebars');
 const session = require('express-session');
 const cvs = require('canvas');
-const emoji = require('emoji.json');
 const fs = require('fs');
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
@@ -71,10 +70,9 @@ app.use(
 	})
 );
 
-// Replace any of these variables below with constants for your application.
-// These variables should be used in your template files.
+// Application Constants
 app.use((req, res, next) => {
-	res.locals.appName = 'JOTY';
+	res.locals.appName = 'Joke of the Year';
 	res.locals.copyrightYear = 2024;
 	res.locals.postNeoType = 'Joke';
 	res.locals.loggedIn = req.session.loggedIn || false;
@@ -94,8 +92,8 @@ app.use(express.json());
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Home route: render home view with posts and user
-// We pass the posts and user variables into the home template
 app.get('/', (req, res) => {
+	// Pass the posts and user variables into the home template
 	const posts = getPosts();
 	const user = getCurrentUser(req) || {};
 	res.render('home', { posts, user});
@@ -116,9 +114,17 @@ app.get('/error', (req, res) => {
 	res.render('error');
 });
 
-app.get('/post/:id', (req, res) => {
-	// TODO: Render post detail page
+// Profile route: render user profile
+app.get('/profile', isAuthenticated, (req, res) => {
+	renderProfile(req, res);
 });
+
+// Logout route: log out user
+app.get('/avatar/:username', (req, res) => {
+	handleAvatar(req, res);
+});
+
+// Post route: add a new post
 app.post('/posts', (req, res) => {
 	try {
 		let title = req.body.title;
@@ -130,25 +136,20 @@ app.post('/posts', (req, res) => {
 		console.error(error);
 	}
 });
+
+// Like route: update post likes
 app.post('/like/:id', (req, res) => {
 	try {
-		updatePostLikes(req,res);
+		updatePostLikes(req, res);
 		res.sendStatus(200);
 	} catch (error) {
 		console.error(error);
 		res.send(500);
 	}
 });
-app.get('/profile', isAuthenticated, (req, res) => {
-	// TODO: Render profile page
-	renderProfile(req, res);
-});
-app.get('/avatar/:username', (req, res) => {
-	// TODO: Serve the avatar image for the user
-	handleAvatar(req, res);
-});
+
+// Register route: register a new user
 app.post('/register', (req, res) => {
-	// TODO: Register a new user
 	try {
 		registerUser(req, res);
 		handleAvatar(req, res);
@@ -156,8 +157,9 @@ app.post('/register', (req, res) => {
 		console.error(error);
 	}
 });
+
+// Login route: login a user
 app.post('/login', (req, res) => {
-	// TODO: Login a user
 	try {
 		if(loginUser(req, res)) {
 			handleAvatar(req, res);
@@ -166,9 +168,13 @@ app.post('/login', (req, res) => {
 		console.error(error);
 	}
 });
+
+// Logout route: log out a user
 app.get('/logout', (req, res) => {
 	logoutUser(req, res);
 });
+
+// Delete route: delete a post
 app.post('/delete/:id', isAuthenticated, (req, res) => {
 	try {
 		deletePost(req, res);
@@ -176,9 +182,23 @@ app.post('/delete/:id', isAuthenticated, (req, res) => {
 		console.log(error);
 	}
 });
-app.get('/emoji', (req, res) => {
-	res.json(emoji);
+
+// Emoji route: return all emojis
+app.get('/emoji', async (req, res) => {
+	try {
+		const apiKey = 'e6184e29efa8398fe5e5ddbac0602fffbc281bbb';
+		const url = `https://emoji-api.com/emojis?access_key=${apiKey}`;
+
+		const response = await fetch(url);
+		const emojis = await response.json();
+
+		res.send(emojis);
+	} catch (error) {
+		console.error(`Got error: ${error.message}`);
+		res.sendStatus(500);
+	}
 });
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Server Activation
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -212,6 +232,24 @@ function findUserById(userId) {
 	return undefined;
 }
 
+// Function to find a post by post ID
+function findPostById(postId) {
+	let post = posts.find(post => post.id === postId);
+	if (post) {
+		return post;
+	}
+	return undefined;
+}
+
+// Function to get the current user from session
+function getCurrentUser(req) {
+	let user = findUserById(req.session.userId);
+	if (user) {
+		return user;
+	}
+	return null;
+}
+
 // Function to add a new user
 function addUser(username) {
 	// TODO: Create a new user object and add to users array
@@ -241,7 +279,7 @@ function registerUser(req, res) {
 	let userName = req.body.userName;
 	let existingUser = findUserByUsername(userName);
 	if (existingUser) {
-		res.redirect('/login?error=User%20already%20exists');
+		res.redirect('/register?error=User%20already%20exists');
 	} else {
 		let user = addUser(userName);
 		console.log(users);
@@ -291,7 +329,7 @@ function logoutUser(req, res) {
 // Function to render the profile page
 function renderProfile(req, res) {
 	let userId = req.session.userId;
-	const user = users.find(user => user.id === userId);
+	const user = findUserById(userId);
 	res.render('profile', {user});
 }
 
@@ -299,9 +337,8 @@ function renderProfile(req, res) {
 function updatePostLikes(req, res) {
 	try {
 		const postId = parseInt(req.params.id);
-		let post = posts.find(post => post.id === postId);
-		let userId = req.session.userId;
-		let currentUser = users.find(user => user.id === userId);
+		let post = findPostById(postId);
+		let currentUser = getCurrentUser(req);
 		if (!('postsLikedId' in currentUser)) {
 			currentUser.postsLikedId = [];
 		}
@@ -322,9 +359,8 @@ function updatePostLikes(req, res) {
 function deletePost(req, res) {
 	try {
 		const postId = parseInt(req.params.id);
-		let post = posts.find(post => post.id === postId);
-		let userId = req.session.userId;
-		let user = users.find(user => user.id === userId);
+		let post = findPostById(postId);
+		let user = findUserById(req.session.userId)
 		let userIndex = user.posts.indexOf(post);
 		let postsIndex = posts.indexOf(post);
 		if (postsIndex !== -1 && userIndex !== -1) {	// TODO: CONTINUE HERE
@@ -342,22 +378,17 @@ function deletePost(req, res) {
 // Function to handle avatar generation and serving
 function handleAvatar(req, res) {
 	const username = req.body.userName;
-	const user = users.find(user => user.username === username);
+	const user = findUserByUsername(username);
 	if (!user.avatar_url) {
 		const firstLetter = username.charAt(0).toUpperCase();
-		if (generateAvatar(firstLetter)) {
-			user.avatar_url = 'images/' + username + '.png';
+		const url = './public/images/' + username + '.png';
+		const out = fs.createWriteStream(url);
+		user.avatar_url = '/images/' + username + '.png';
+		pngStream = generateAvatar(firstLetter);
+		if (pngStream) {
+			pngStream.pipe(out);
 		}
 	}
-}
-
-// Function to get the current user from session
-function getCurrentUser(req) {
-	let user = users.find(user => user.id === req.session.userId);
-	if (user) {
-		return user;
-	} 
-	return null;
 }
 
 // Function to get all posts, sorted by latest first
@@ -397,16 +428,14 @@ function generateAvatar(letter, width = 100, height = 100) {
 	context.font = '70px Arial';
 	context.textAlign = 'center';
 	context.textBaseline = 'middle';
-	context.fillText(letter, width / 2, height / 2);
 
-	// Save the canvas as an image
-	const url = './public/images/' + username + '.png';
-	const out = fs.createWriteStream(url);
+	// Draw the letter
+	context.fillText(letter, width / 2, height / 2);	
 	const stream = canvas.createPNGStream();
-	stream.pipe(out);
-	out.on('finish', ()=>{console.log('The image was created.'); return true;});
+	return stream;
 }
 
+// Creates new time in the format provided
 function getNewTimeStamp() {
 	let date = new Date();
 	const year = date.getFullYear();
