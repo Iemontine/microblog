@@ -15,6 +15,7 @@ html, body {
 }
 
 /* ================================ NAVBAR ================================ */
+
 header {
 	display: flex;
 	justify-content: center;
@@ -24,6 +25,13 @@ header {
 	padding: 11px;
 	text-align: center;
 	gap: 25px;
+}
+
+@media (max-width: 560px) {
+	header {
+		flex-direction: column;
+		gap: 0px;
+	}
 }
 header .logo {
 	font-family: 'MotivaSansBlack', Arial, Helvetica, sans-serif;
