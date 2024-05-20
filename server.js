@@ -140,15 +140,12 @@ app.post('/like/:id', (req, res) => {
 	}
 });
 app.get('/profile', isAuthenticated, (req, res) => {
-	// TODO: Render profile page
 	renderProfile(req, res);
 });
 app.get('/avatar/:username', (req, res) => {
-	// TODO: Serve the avatar image for the user
 	handleAvatar(req, res);
 });
 app.post('/register', (req, res) => {
-	// TODO: Register a new user
 	try {
 		registerUser(req, res);
 		handleAvatar(req, res);
@@ -157,7 +154,6 @@ app.post('/register', (req, res) => {
 	}
 });
 app.post('/login', (req, res) => {
-	// TODO: Login a user
 	try {
 		if(loginUser(req, res)) {
 			handleAvatar(req, res);
@@ -345,9 +341,14 @@ function handleAvatar(req, res) {
 	const user = users.find(user => user.username === username);
 	if (!user.avatar_url) {
 		const firstLetter = username.charAt(0).toUpperCase();
-		if (generateAvatar(firstLetter)) {
-			user.avatar_url = 'images/' + username + '.png';
-		}
+		const url = './public/images/' + username + '.png';
+		const out = fs.createWriteStream(url);
+
+		user.avatar_url = '/images/' + username + '.png';
+		pngStream = generateAvatar(firstLetter);
+    if (pngStream) {
+      pngStream.pipe(out);
+    }
 	}
 }
 
@@ -397,16 +398,14 @@ function generateAvatar(letter, width = 100, height = 100) {
 	context.font = '70px Arial';
 	context.textAlign = 'center';
 	context.textBaseline = 'middle';
-	context.fillText(letter, width / 2, height / 2);
 
-	// Save the canvas as an image
-	const url = './public/images/' + username + '.png';
-	const out = fs.createWriteStream(url);
+	// Draw the letter
+	context.fillText(letter, width / 2, height / 2);	
 	const stream = canvas.createPNGStream();
-	stream.pipe(out);
-	out.on('finish', ()=>{console.log('The image was created.'); return true;});
+	return stream;
 }
 
+// Creates new time in the format provided
 function getNewTimeStamp() {
 	let date = new Date();
 	const year = date.getFullYear();
