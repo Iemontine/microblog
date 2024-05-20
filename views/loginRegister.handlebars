@@ -1,34 +1,28 @@
 {{! Use the main layout }}
 {{!< main }}
-
 <section class="login-register">
 	<section class = "login-area">
 		<h2>LOG IN WITH ACCOUNT NAME</h2>
-		<!-- errors will appear here -->
+		<!-- Error handling -->
 		{{#if loginError}}
 			<p style="color: red;">{{loginError}}</p>
 		{{/if}}
+		<!-- Login form -->
 		<form id="login" action="/login" method="POST">
-			<!-- the login form goes here -->    
-			<input type="text" name="userName" id="loginUserName">    
+			<input type="text" name="userName" id="loginUserName">
 			<button type="submit">LOGIN</button>
 		</form>
 	</section>
-
-	<!-- say --OR-- ... with style -->
-
 	<section class = "register-area">
 		<h2>REGISTER A NEW ACCOUNT</h2>
-		<!-- errors will appear here -->
+		<!-- Error handling -->
 		{{#if regError}}
 			<p style="color: red;">{{regError}}</p>
 		{{/if}}
+		<!-- Register form -->
 		<form id="register" action="/register" method="POST">
-			<!-- the registration form goes here -->
-			<input type="text" name="userName" id="registerUserName">    
+			<input type="text" name="userName" id="registerUserName">
 			<button type="submit">REGISTER</button>
 		</form>
 	</section>
 </section>
-
-
