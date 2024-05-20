@@ -1,21 +1,29 @@
 {{! Use the main layout }}
 {{!< main }}
 
-<div class="profile-container">
-	{{!-- TODO --}}
-</div>
+<div id="profile-screen">
+	<div id="profile-container">
+		{{!-- TODO --}}
+		<img src={{user.avatar_url}} alt={{user.username}} class="profile-picture">
+		<div id="profile-info">
+			<h1>{{user.username}}</h1>
+			<h2>Member since: {{user.memberSince}}</h2>
+		</div>
+		
+	</div>
 
-<section class="user-posts">
-	<h2>Your {{{postNeoType}}}s</h2>
-	
-	<!-- Conditionally show all of the user's posts -->
-	{{#if user.posts}}
-		<ul>
-			{{#each user.posts}}
-				{{> post this user=../user}}
-			{{/each}}
-		</ul>
-	{{else}}
-		<p>You have not posted yet, {{user.username}}.</p>
-	{{/if}}
-</section>
+	<section class="user-posts">
+		<h2>Your {{{postNeoType}}}s</h2>
+		
+		<!-- Conditionally show all of the user's posts -->
+		{{#if user.posts}}
+			<ul>
+				{{#each user.posts}}
+					{{> post this user=../user}}
+				{{/each}}
+			</ul>
+		{{else}}
+			<p>You have not posted yet, {{user.username}}.</p>
+		{{/if}}
+	</section>
+</div>
