@@ -2,7 +2,6 @@ const express = require('express');
 const expressHandlebars = require('express-handlebars');
 const session = require('express-session');
 const cvs = require('canvas');
-const emoji = require('emoji.json');
 const fs = require('fs');
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
@@ -185,8 +184,19 @@ app.post('/delete/:id', isAuthenticated, (req, res) => {
 });
 
 // Emoji route: return all emojis
-app.get('/emoji', (req, res) => {
-	res.json(emoji);
+app.get('/emoji', async (req, res) => {
+	try {
+		const apiKey = 'e6184e29efa8398fe5e5ddbac0602fffbc281bbb';
+		const url = `https://emoji-api.com/emojis?access_key=${apiKey}`;
+
+		const response = await fetch(url);
+		const emojis = await response.json();
+
+		res.send(emojis);
+	} catch (error) {
+		console.error(`Got error: ${error.message}`);
+		res.sendStatus(500);
+	}
 });
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -319,7 +329,7 @@ function logoutUser(req, res) {
 // Function to render the profile page
 function renderProfile(req, res) {
 	let userId = req.session.userId;
-	const user = findPostById(userId);
+	const user = findUserById(userId);
 	res.render('profile', {user});
 }
 

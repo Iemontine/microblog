@@ -42,7 +42,7 @@
 		<ul>
 			{{#each posts}}
 				<!-- you have to pass the user in to posts and this is the syntax -->
-				{{> post this user=../user}}            
+				{{> post this user=../user}}
 			{{/each}}
 		</ul>
 		{{else}}
@@ -51,17 +51,11 @@
 	</section>
 </section>
 
-
 {{! JavaScript for Emoji Integration }}
 <script>
-/*
-	You want to show a subset of the emojis. About 200. However, you also want 
-	the user to be able to search all emojis, so, put them in this array when 
-	the array is empty so that you have them.
-*/
+let allEmojis = [];  // Global list to hold all emojis
 
-let allEmojis = [];  // Global list to hold all emojis\
-
+// Toggles the emoji panel visibility
 function toggleEmojiPanel() {
 	const container = document.getElementById('emoji-container');
 	container.style.display = container.style.display === 'none' ? 'block' : 'none';
@@ -83,16 +77,17 @@ function toggleEmojiPanel() {
 	}
 }
 
-function displayEmojis(emojis,limit=200) {
+// Displays a maximum of 199 emojis in the grid
+function displayEmojis(emojis, limit = 199) {
 	const container = document.getElementById('emoji-grid');
 	container.innerHTML = '';  // Clear previous results
 	if (Array.isArray(emojis) && emojis.length > 0) {
 		emojis.slice(0, limit).forEach(emoji => {
 			const emojiElement = document.createElement('span');
-			emojiElement.textContent = emoji.char;
-			emojiElement.title = emoji.name;  // Showing the emoji name on hover
+			emojiElement.textContent = emoji.character || emoji.char; 
+			emojiElement.title = emoji.unicodeName || emoji.name;
 			emojiElement.style.cursor = 'pointer';
-			emojiElement.onclick = () => insertEmoji(emoji.char);
+			emojiElement.onclick = () => insertEmoji(emoji.character || emoji.char);
 			container.appendChild(emojiElement);
 		});
 	} else {
@@ -100,27 +95,30 @@ function displayEmojis(emojis,limit=200) {
 	}
 }
 
+// Search for emojis based on the search term
 function searchEmojis() {
 	const searchTerm = document.getElementById('emoji-search').value.toLowerCase();
 	// array.filter takes a predicate
 	// use string.includes. 
 	const filteredEmojis = allEmojis.filter(emoji => 
-		emoji.name.toLowerCase().includes(searchTerm) || emoji.category.toLowerCase().includes(searchTerm)
+		(emoji.unicodeName && emoji.unicodeName.toLowerCase().includes(searchTerm)) || 
+		(emoji.category && emoji.category.toLowerCase().includes(searchTerm))
 	);
 	console.log(filteredEmojis);
 	displayEmojis(filteredEmojis);
 }
 
+// Insert an emoji into the textarea
 function insertEmoji(emoji) {
 	// put an emoji on a form somehow. 
-	let textarea = document.getElementById('content');
+	let textarea = document.querySelector('textarea[name="content"]');
 	textarea.value = textarea.value + emoji;
 	// do this when you're doing getting the emoji on the form
 	textarea.focus();  // Keep focus on the textarea
 }
 
+// Event listener for emoji search
 document.getElementById('emoji-search').addEventListener('input', function(e) {
 	searchEmojis();
 })
 </script>
-
