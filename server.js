@@ -1,7 +1,10 @@
+"use strict";
+
 const express = require('express');
 const expressHandlebars = require('express-handlebars');
 const session = require('express-session');
 const cvs = require('canvas');
+const dotenv = require('dotenv').config();
 const fs = require('fs');
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
@@ -96,7 +99,7 @@ app.get('/', (req, res) => {
 	// Pass the posts and user variables into the home template
 	const posts = getPosts();
 	const user = getCurrentUser(req) || {};
-	res.render('home', { posts, user});
+	res.render('home', { posts, user });
 });
 
 // Register GET route is used for error response from registration
@@ -119,9 +122,9 @@ app.get('/profile', isAuthenticated, (req, res) => {
 	renderProfile(req, res);
 });
 
-// Logout route: log out user
+// Avatar route: serve user avatar
 app.get('/avatar/:username', (req, res) => {
-	handleAvatar(req, res);
+	// unused
 });
 
 // Post route: add a new post
@@ -129,7 +132,7 @@ app.post('/posts', (req, res) => {
 	try {
 		let title = req.body.title;
 		let content = req.body.content;
-		let user = users.find(u => u.id === req.session.userId);
+		let user = findUserById(req.session.userId);
 		addPost(title, content, user);
 		res.redirect('/');
 	} catch (error) {
@@ -186,7 +189,7 @@ app.post('/delete/:id', isAuthenticated, (req, res) => {
 // Emoji route: return all emojis
 app.get('/emoji', async (req, res) => {
 	try {
-		const apiKey = 'e6184e29efa8398fe5e5ddbac0602fffbc281bbb';
+		const apiKey = process.env.EMOJI_API_KEY;
 		const url = `https://emoji-api.com/emojis?access_key=${apiKey}`;
 
 		const response = await fetch(url);
@@ -211,8 +214,16 @@ app.listen(PORT, () => {
 // Support Functions and Variables
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// Emulate pre-existing data
+// TODO: new lines don't look so good rn, need to somehow replace with <br>
 let posts = [];
-let users = [];
+let users = [
+    { id: 1, username: 'Ellen958', avatar_url: generateAvatar('E', './public/images/Ellen958.png'), memberSince: '1958-01-26 12:00' },
+    { id: 2, username: 'CourseAssist.ai', avatar_url: generateAvatar('C', './public/images/CourseAssist.ai.png'), memberSince: '2024-05-20 13:37' },
+];
+addPost('ellen degeneres joke', 'Why did the scarecrow get a promotion? \n Because it was outstanding in its field!!!!', findUserById(1))
+addPost('Extremely Funny Joke', 'Why do APIs always carry umbrellas? Because they can’t handle a downpour of requests!', findUserById(2))
+
 
 // Function to find a user by username
 function findUserByUsername(username) {
@@ -250,20 +261,6 @@ function getCurrentUser(req) {
 	return null;
 }
 
-// Function to add a new user
-function addUser(username) {
-	// TODO: Create a new user object and add to users array
-	let timeStamp = getNewTimeStamp();
-	let user = {
-		id: users.length + 1,
-		username: username,
-		avatar_url: undefined,
-		memberSince: timeStamp,
-	}
-	users.push(user);
-	return user;
-}
-
 // Middleware to check if user is authenticated
 function isAuthenticated(req, res, next) {
 	console.log(req.session.userId);
@@ -295,6 +292,20 @@ function registerUser(req, res) {
 			}
 		});
 	}
+}
+
+// Function to add a new user
+function addUser(username) {
+	// TODO: Create a new user object and add to users array
+	let timeStamp = getNewTimeStamp();
+	let user = {
+		id: users.length + 1,
+		username: username,
+		avatar_url: undefined,
+		memberSince: timeStamp,
+	}
+	users.push(user);
+	return user;
 }
 
 // Function to login a user
@@ -339,16 +350,18 @@ function updatePostLikes(req, res) {
 		const postId = parseInt(req.params.id);
 		let post = findPostById(postId);
 		let currentUser = getCurrentUser(req);
-		if (!('postsLikedId' in currentUser)) {
-			currentUser.postsLikedId = [];
-		}
-		let index = currentUser.postsLikedId.indexOf(postId);
-		if (index !== -1) {
-			currentUser.postsLikedId.splice(index, 1);
-			post.likes--;
-		} else {
-			currentUser.postsLikedId.push(postId);
-			post.likes++;
+		if (currentUser) { // Ensure the user has been registered
+			if (!('postsLikedId' in currentUser)) {
+				currentUser.postsLikedId = [];
+			}
+			let index = currentUser.postsLikedId.indexOf(postId);
+			if (index !== -1) {
+				currentUser.postsLikedId.splice(index, 1);
+				post.likes--;
+			} else {
+				currentUser.postsLikedId.push(postId);
+				post.likes++;
+			}
 		}
 	} catch (error) {
 		console.error(error);
@@ -382,13 +395,37 @@ function handleAvatar(req, res) {
 	if (!user.avatar_url) {
 		const firstLetter = username.charAt(0).toUpperCase();
 		const url = './public/images/' + username + '.png';
-		const out = fs.createWriteStream(url);
 		user.avatar_url = '/images/' + username + '.png';
-		pngStream = generateAvatar(firstLetter);
-		if (pngStream) {
-			pngStream.pipe(out);
-		}
+		generateAvatar(firstLetter, url);
 	}
+}
+
+// Function to generate an image avatar
+function generateAvatar(letter, url, width = 100, height = 100) {
+	const canvas = cvs.createCanvas(width, height);
+	const context = canvas.getContext('2d');
+
+	// Fill background with random color
+	context.fillStyle = '#' + Math.floor(Math.random() * 16777215).toString(16);
+	context.fillRect(0, 0, width, height);
+
+	// Draw the letter
+	context.fillStyle = '#FFFFFF'; // White color for text
+	context.font = '70px Arial';
+	context.textAlign = 'center';
+	context.textBaseline = 'middle';
+
+	// Draw the letter
+	context.fillText(letter, width / 2, height / 2);	
+	const stream = canvas.createPNGStream();
+	
+	const out = fs.createWriteStream(url);
+	// Save the image
+	if (stream) {
+		stream.pipe(out);
+		return url.replace('./public', '');
+	}
+	return undefined;
 }
 
 // Function to get all posts, sorted by latest first
@@ -412,27 +449,6 @@ function addPost(title, content, user) {
 	}
 	user.posts.push(post);
 	posts.push(post);
-}
-
-// Function to generate an image avatar
-function generateAvatar(letter, width = 100, height = 100) {
-	const canvas = cvs.createCanvas(width, height);
-	const context = canvas.getContext('2d');
-
-	// Fill background with random color
-	context.fillStyle = '#' + Math.floor(Math.random() * 16777215).toString(16);
-	context.fillRect(0, 0, width, height);
-
-	// Draw the letter
-	context.fillStyle = '#FFFFFF'; // White color for text
-	context.font = '70px Arial';
-	context.textAlign = 'center';
-	context.textBaseline = 'middle';
-
-	// Draw the letter
-	context.fillText(letter, width / 2, height / 2);	
-	const stream = canvas.createPNGStream();
-	return stream;
 }
 
 // Creates new time in the format provided
