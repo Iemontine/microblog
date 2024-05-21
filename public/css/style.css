@@ -66,6 +66,7 @@ header .profile-picture {
 /* ================================ POSTS ================================ */
 .content-container {
 	padding-bottom: 20px;
+	padding-inline: 20px;
 }
 .post, form {
     display: flex;
@@ -283,20 +284,27 @@ footer p {
 }
 
 /* ============================= LOGIN/REGISTER ============================= */
+.login-container {
+	padding-inline: 20px;
+	padding-top: 20px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 .login-register {
 	width: 100%;
 	padding: 20px;
 	display: flex;
-	position: absolute;
+	/* position: absolute; */
 	flex-direction: column;
 	background-color: #0D131B;
 	color:#C5C3C0;
 	border-radius: 8px;
 	max-width: 600px;
 	height: fit-content;
-	top: 50%;
+	/* top: 50%;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%); */
 }
 .login-area, .register-area {
 	margin: 20px;
