@@ -1,26 +1,25 @@
 {{! Partial for a single post }}
 <div class="post">
+    <div class="post-content preserve-newlines">
+        <h1>{{this.title}}</h1>
+        <p>{{this.content}}</p>
+    </div>
 	<div class="post-avatar" onload="getAvatar(event)">
-		<img src={{this.avatar_url}} alt=this.username class="profile-picture">
+		<img src="{{this.avatar_url}}" alt="{{this.username}}" class="profile-picture">
+		{{!-- TODO: proper styling for stacking the username and timestamp on top of eachother using flex --}}
+		<span>Posted by {{this.username}} on {{this.timestamp}}</span>
+		{{!-- <span>on {{this.timestamp}}</span> --}}
 	</div>
-	<div class="post-content preserve-newlines">
-		<h1>{{this.title}}</h1>
-		<p>{{this.content}}</p>
-		<div class="post-status-bar">
-			<!-- everything that is shown in the status bar -->
-			<!-- font awesome  trashcan = <i class="fas fa-trash-alt"> </i>-->
-			{{#ifCond this.username user.username}}
-				<button class="deleteButton" data-id={{this.id}} onclick="handleDeleteClick(event)"><i class="fas fa-trash-alt"> </i></button>
-			{{else}}
-				<button class="likeButton" data-id={{this.id}} onclick="handleLikeClick(event)">♥</button>
-			{{/ifCond}}
-			<span class="likes">{{this.likes}} likes</span>
-			<span>Posted by {{this.username}} on {{this.timestamp}}</span>
-		</div>
+	<div class="post-status-bar">
+		<span class="likes">{{this.likes}} likes</span>
+		{{#ifCond this.username user.username}}
+			<button class="deleteButton" data-id="{{this.id}}" onclick="handleDeleteClick(event)"><i class="fas fa-trash-alt"></i></button>
+		{{else}}
+			<button class="likeButton" data-id="{{this.id}}" onclick="handleLikeClick(event)">♥</button>
+		{{/ifCond}}
 	</div>
 </div>
 <script>
-
 	function handleLikeClick(event) {
 		const postId = event.target.getAttribute('data-id');
 		try {

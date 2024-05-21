@@ -5,6 +5,7 @@ npm install express
 npm install express-handlebars
 npm install express-session
 npm install canvas
+npm install dotenv
 ```
 
 Start server:
