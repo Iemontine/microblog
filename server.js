@@ -220,9 +220,6 @@ let users = [
     { id: 1, username: 'Ellen958', avatar_url: generateAvatar(letter='E', url='./public/images/Ellen958.png'), memberSince: '1958-01-26 12:00' },
     { id: 2, username: 'CourseAssist.ai', avatar_url: generateAvatar(letter='C', url='./public/images/CourseAssist.ai.png'), memberSince: '2024-05-20 13:37' },
 ];
-// TODO: this
-findUserByUsername('Ellen958').avatar_url = '/images/Ellen958.png';
-findUserByUsername('CourseAssist.ai').avatar_url = '/images/CourseAssist.ai.png';
 
 // Function to find a user by username
 function findUserByUsername(username) {
@@ -260,20 +257,6 @@ function getCurrentUser(req) {
 	return null;
 }
 
-// Function to add a new user
-function addUser(username) {
-	// TODO: Create a new user object and add to users array
-	let timeStamp = getNewTimeStamp();
-	let user = {
-		id: users.length + 1,
-		username: username,
-		avatar_url: undefined,
-		memberSince: timeStamp,
-	}
-	users.push(user);
-	return user;
-}
-
 // Middleware to check if user is authenticated
 function isAuthenticated(req, res, next) {
 	console.log(req.session.userId);
@@ -305,6 +288,20 @@ function registerUser(req, res) {
 			}
 		});
 	}
+}
+
+// Function to add a new user
+function addUser(username) {
+	// TODO: Create a new user object and add to users array
+	let timeStamp = getNewTimeStamp();
+	let user = {
+		id: users.length + 1,
+		username: username,
+		avatar_url: undefined,
+		memberSince: timeStamp,
+	}
+	users.push(user);
+	return user;
 }
 
 // Function to login a user
@@ -396,9 +393,7 @@ function handleAvatar(req, res) {
 		const url = './public/images/' + username + '.png';
 		user.avatar_url = '/images/' + username + '.png';
 		generateAvatar(firstLetter, url);
-		return user.avatar_url;
 	}
-	return null;
 }
 
 // Function to generate an image avatar
@@ -424,7 +419,9 @@ function generateAvatar(letter, url, width = 100, height = 100) {
 	// Save the image
 	if (stream) {
 		stream.pipe(out);
+		return url.replace('./public', '');
 	}
+	return undefined;
 }
 
 // Function to get all posts, sorted by latest first

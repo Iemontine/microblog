@@ -146,6 +146,12 @@ header .profile-picture {
 	font-weight: bold;
 	font-family: 'MotivaSansMedium', Arial, Helvetica, sans-serif;
 }
+.user-posts p {
+	text-align: left;
+	color:#C5C3C0;
+	font-weight: normal;
+	font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
+}
 
 /* ================================ USER FORM ================================ */
 .post-form {
