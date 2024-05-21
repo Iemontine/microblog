@@ -112,6 +112,12 @@ app.get('/login', (req, res) => {
 	res.render('loginRegister', { loginError: req.query.error });
 });
 
+app.get('/home', (req, res) => {
+	const posts = getPosts();
+	const user = getCurrentUser(req) || {};
+	res.render('home', { posts, user, titleError: req.query.error, content: req.query.content });
+});
+
 // Error route: render error page
 app.get('/error', (req, res) => {
 	res.render('error');
@@ -133,8 +139,12 @@ app.post('/posts', (req, res) => {
 		let title = req.body.title;
 		let content = req.body.content;
 		let user = findUserById(req.session.userId);
-		addPost(title, content, user);
-		res.redirect('/');
+		if (title === '') {
+			res.redirect(`/home?error=Title%20required&content=${content}`);
+		} else {
+			addPost(title, content, user);
+			res.redirect('/');
+		}
 	} catch (error) {
 		console.error(error);
 	}
@@ -274,8 +284,11 @@ function isAuthenticated(req, res, next) {
 // Function to register a user
 function registerUser(req, res) {
 	let userName = req.body.userName;
+	
 	let existingUser = findUserByUsername(userName);
-	if (existingUser) {
+	if (userName === '') {
+		res.redirect('/register?error=Input%20required');
+	} else if (existingUser) {
 		res.redirect('/register?error=User%20already%20exists');
 	} else {
 		let user = addUser(userName);
@@ -312,7 +325,9 @@ function addUser(username) {
 function loginUser(req, res) {
 	let userName = req.body.userName;
 	let user = findUserByUsername(userName);
-	if (user) {
+	if (userName === '') {
+		res.redirect('/login?error=Input%20required');
+	} else if (user) {
 		// req.session.user = user;
 		req.session.userId = user.id;
 		req.session.loggedIn = true;

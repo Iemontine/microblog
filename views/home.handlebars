@@ -16,8 +16,11 @@
 					<button type="button" id="emoji-button" onclick="toggleEmojiPanel()">😀</button>
 				</div>
 				<div id="input-container">
+					{{#if titleError}}
+						<p style="color: red;">{{titleError}}</p>
+					{{/if}}
 					<input type="text" name="title" placeholder="Title">
-					<textarea type="text" name="content" placeholder="Content"></textarea>
+					<textarea type="text" name="content" placeholder="Content (optional)">{{content}}</textarea>
 				</div>
 				<div id="form-actions">
 					<button type="submit" class="post-button">Post</button>
