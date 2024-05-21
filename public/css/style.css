@@ -196,6 +196,8 @@ header .profile-picture {
 	width: 100%;
 	color: #C5C3C0;
 }
+
+
 #profile-screen {
 	padding-inline: 20px;
 }
@@ -359,5 +361,8 @@ button[type="submit"]:hover {
 	}
 	.logo h1 {
 		font-size: 4.5vw;
+	}
+	#profile-container {
+		flex-direction: column;
 	}
 }
