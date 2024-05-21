@@ -115,7 +115,10 @@ header .profile-picture {
 	font-size: 12px;
 	color: #999;
 }
-
+.noPosts {
+	color: #D3D4D5;
+ 
+}
 /* ================================ USER-POSTS ================================ */
 .user-posts h2 {
 	text-align: center;
