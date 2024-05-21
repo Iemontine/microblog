@@ -34,14 +34,14 @@
 	<section class="posts-list">
 		<!-- recent posts -->
 		{{#if posts.length}}
-		<ul>
-			{{#each posts}}
-				<!-- you have to pass the user in to posts and this is the syntax -->
-				{{> post this user=../user}}
-			{{/each}}
-		</ul>
+			<ul>
+				{{#each posts}}
+					<!-- Pass the user into posts -->
+					{{> post this user=../user}}
+				{{/each}}
+			</ul>
 		{{else}}
-			<!-- no posts, oh no, what now? -->
+			<p>No one has posted yet!</p>
 		{{/if}}
 	</section>
 </section>

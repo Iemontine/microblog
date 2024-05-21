@@ -1,7 +1,10 @@
+"use strict";
+
 const express = require('express');
 const expressHandlebars = require('express-handlebars');
 const session = require('express-session');
 const cvs = require('canvas');
+const dotenv = require('dotenv').config();
 const fs = require('fs');
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
@@ -96,7 +99,7 @@ app.get('/', (req, res) => {
 	// Pass the posts and user variables into the home template
 	const posts = getPosts();
 	const user = getCurrentUser(req) || {};
-	res.render('home', { posts, user});
+	res.render('home', { posts, user });
 });
 
 // Register GET route is used for error response from registration
@@ -129,7 +132,7 @@ app.post('/posts', (req, res) => {
 	try {
 		let title = req.body.title;
 		let content = req.body.content;
-		let user = users.find(u => u.id === req.session.userId);
+		let user = findUserById(req.session.userId);
 		addPost(title, content, user);
 		res.redirect('/');
 	} catch (error) {
@@ -186,7 +189,7 @@ app.post('/delete/:id', isAuthenticated, (req, res) => {
 // Emoji route: return all emojis
 app.get('/emoji', async (req, res) => {
 	try {
-		const apiKey = 'e6184e29efa8398fe5e5ddbac0602fffbc281bbb';
+		const apiKey = process.env.EMOJI_API_KEY;
 		const url = `https://emoji-api.com/emojis?access_key=${apiKey}`;
 
 		const response = await fetch(url);
@@ -211,15 +214,16 @@ app.listen(PORT, () => {
 // Support Functions and Variables
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// TODO: new lines don't look so good rn
-let posts = [
-    { id: 1, title: 'Extremely Funny Joke', content: 'Why do APIs always carry umbrellas? Because they can’t handle a downpour of requests!', username: 'CourseAssist.ai', timestamp: '2024-05-20 13:37', likes: 1 },
-    { id: 2, title: 'ellen degeneres joke', content: 'Why did the scarecrow get a promotion? \n Because it was outstanding in its field!!!!', username: 'Ellen958', timestamp: '2024-07-26 12:00', likes: 1259209 },
-];
+// Emulate pre-existing data
+// TODO: new lines don't look so good rn, need to somehow replace with <br>
+let posts = [];
 let users = [
-    { id: 1, username: 'Ellen958', avatar_url: generateAvatar(letter='E', url='./public/images/Ellen958.png'), memberSince: '1958-01-26 12:00' },
-    { id: 2, username: 'CourseAssist.ai', avatar_url: generateAvatar(letter='C', url='./public/images/CourseAssist.ai.png'), memberSince: '2024-05-20 13:37' },
+    { id: 1, username: 'Ellen958', avatar_url: generateAvatar('E', './public/images/Ellen958.png'), memberSince: '1958-01-26 12:00' },
+    { id: 2, username: 'CourseAssist.ai', avatar_url: generateAvatar('C', './public/images/CourseAssist.ai.png'), memberSince: '2024-05-20 13:37' },
 ];
+addPost('ellen degeneres joke', 'Why did the scarecrow get a promotion? \n Because it was outstanding in its field!!!!', findUserById(1))
+addPost('Extremely Funny Joke', 'Why do APIs always carry umbrellas? Because they can’t handle a downpour of requests!', findUserById(2))
+
 
 // Function to find a user by username
 function findUserByUsername(username) {

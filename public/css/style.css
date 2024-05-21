@@ -24,6 +24,7 @@ header {
 	padding: 11px;
 	text-align: center;
 	gap: 25px;
+	flex-shrink: 1;
 }
 header .logo {
 	font-family: 'MotivaSansBlack', Arial, Helvetica, sans-serif;
@@ -54,13 +55,10 @@ header .profile-picture {
 	overflow: hidden;
 	vertical-align: middle;
 }
-@media (max-width: 560px) {
-	header .profile-picture
-	{
-		display: none;
-	}
-}
 /* ================================ POSTS ================================ */
+.content-container {
+	padding-bottom: 20px;
+}
 .post, form {
     display: flex;
     flex-direction: column;
@@ -70,6 +68,7 @@ header .profile-picture {
     max-width: 925px;
     position: relative;
     margin: 20px auto;
+	z-index: 2;
 }
 .post-content h1 {
 	font-size: 20px;
@@ -82,8 +81,7 @@ header .profile-picture {
 }
 .post-avatar {
 	display: flex;
-    align-items: center;
-    gap: 10px;
+    gap: 0px;
 	min-width: 200px;
 }
 .post-avatar .profile-picture {
@@ -94,6 +92,19 @@ header .profile-picture {
 	border-style: solid;
 	border-color: #D3D4D5;
 	overflow: hidden;
+}
+.post-avatar {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.post-avatar span {
+	font-size: 12px;
+	color: #999;
+	margin-left: auto;
 }
 .posts-list ul {
 	list-style-type: none;
@@ -121,18 +132,10 @@ header .profile-picture {
 	background-color: #0D131B;
 	border-radius: 8px;
 }
-.post-status-bar span, .post-avatar span {
+.post-status-bar span {
 	font-size: 12px;
 	color: #999;
 	margin-left: auto;
-}
-.post-avatar {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 .post-content {
 	position: relative;
@@ -146,11 +149,9 @@ header .profile-picture {
 	font-weight: bold;
 	font-family: 'MotivaSansMedium', Arial, Helvetica, sans-serif;
 }
-.user-posts p {
-	text-align: left;
-	color:#C5C3C0;
-	font-weight: normal;
-	font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
+.user-posts > p, .posts-list > p {
+	text-align:center;
+	color: #C5C3C0;
 }
 
 /* ================================ USER FORM ================================ */
@@ -244,11 +245,6 @@ footer p {
 	left: 10px;
 	bottom: 0;
 }
-@media (max-width: 560px) {
-	footer p {
-		display: none;
-	}
-}
 
 /* ============================= LOGIN/REGISTER ============================= */
 .login-register {
@@ -306,4 +302,18 @@ button[type="submit"]:hover {
 }
 .login-area p {
 	margin-left: 8px;
+}
+
+/* ============================ RESPONSIVENESS ============================= */
+@media (max-width: 560px) {
+	footer p {
+		display: none;
+	}
+	header .profile-picture
+	{
+		display: none;
+	}
+	.logo h1 {
+		font-size: 4.5vw;
+	}
 }
