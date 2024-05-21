@@ -112,7 +112,7 @@ app.get('/login', (req, res) => {
 app.get('/home', (req, res) => {
 	const posts = getPosts();
 	const user = getCurrentUser(req) || {};
-	res.render('home', { posts, user, titleError: req.query.error });
+	res.render('home', { posts, user, titleError: req.query.error, content: req.query.content });
 });
 
 // Error route: render error page
@@ -137,7 +137,7 @@ app.post('/posts', (req, res) => {
 		let content = req.body.content;
 		let user = users.find(u => u.id === req.session.userId);
 		if (title === '') {
-			res.redirect('/home?error=Title%20required');
+			res.redirect(`/home?error=Title%20required&content=${content}`);
 		} else {
 			addPost(title, content, user);
 			res.redirect('/');
