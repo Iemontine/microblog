@@ -211,8 +211,18 @@ app.listen(PORT, () => {
 // Support Functions and Variables
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-let posts = [];
-let users = [];
+// TODO: new lines don't look so good rn
+let posts = [
+    { id: 1, title: 'Extremely Funny Joke', content: 'Why do APIs always carry umbrellas? Because they can’t handle a downpour of requests!', username: 'CourseAssist.ai', timestamp: '2024-05-20 13:37', likes: 1 },
+    { id: 2, title: 'ellen degeneres joke', content: 'Why did the scarecrow get a promotion? \n Because it was outstanding in its field!!!!', username: 'Ellen958', timestamp: '2024-07-26 12:00', likes: 1259209 },
+];
+let users = [
+    { id: 1, username: 'Ellen958', avatar_url: generateAvatar(letter='E', url='./public/images/Ellen958.png'), memberSince: '1958-01-26 12:00' },
+    { id: 2, username: 'CourseAssist.ai', avatar_url: generateAvatar(letter='C', url='./public/images/CourseAssist.ai.png'), memberSince: '2024-05-20 13:37' },
+];
+// TODO: this
+findUserByUsername('Ellen958').avatar_url = '/images/Ellen958.png';
+findUserByUsername('CourseAssist.ai').avatar_url = '/images/CourseAssist.ai.png';
 
 // Function to find a user by username
 function findUserByUsername(username) {
@@ -339,16 +349,18 @@ function updatePostLikes(req, res) {
 		const postId = parseInt(req.params.id);
 		let post = findPostById(postId);
 		let currentUser = getCurrentUser(req);
-		if (!('postsLikedId' in currentUser)) {
-			currentUser.postsLikedId = [];
-		}
-		let index = currentUser.postsLikedId.indexOf(postId);
-		if (index !== -1) {
-			currentUser.postsLikedId.splice(index, 1);
-			post.likes--;
-		} else {
-			currentUser.postsLikedId.push(postId);
-			post.likes++;
+		if (currentUser) { // Ensure the user has been registered
+			if (!('postsLikedId' in currentUser)) {
+				currentUser.postsLikedId = [];
+			}
+			let index = currentUser.postsLikedId.indexOf(postId);
+			if (index !== -1) {
+				currentUser.postsLikedId.splice(index, 1);
+				post.likes--;
+			} else {
+				currentUser.postsLikedId.push(postId);
+				post.likes++;
+			}
 		}
 	} catch (error) {
 		console.error(error);
@@ -382,12 +394,36 @@ function handleAvatar(req, res) {
 	if (!user.avatar_url) {
 		const firstLetter = username.charAt(0).toUpperCase();
 		const url = './public/images/' + username + '.png';
-		const out = fs.createWriteStream(url);
 		user.avatar_url = '/images/' + username + '.png';
-		pngStream = generateAvatar(firstLetter);
-		if (pngStream) {
-			pngStream.pipe(out);
-		}
+		generateAvatar(firstLetter, url);
+		return user.avatar_url;
+	}
+	return null;
+}
+
+// Function to generate an image avatar
+function generateAvatar(letter, url, width = 100, height = 100) {
+	const canvas = cvs.createCanvas(width, height);
+	const context = canvas.getContext('2d');
+
+	// Fill background with random color
+	context.fillStyle = '#' + Math.floor(Math.random() * 16777215).toString(16);
+	context.fillRect(0, 0, width, height);
+
+	// Draw the letter
+	context.fillStyle = '#FFFFFF'; // White color for text
+	context.font = '70px Arial';
+	context.textAlign = 'center';
+	context.textBaseline = 'middle';
+
+	// Draw the letter
+	context.fillText(letter, width / 2, height / 2);	
+	const stream = canvas.createPNGStream();
+	
+	const out = fs.createWriteStream(url);
+	// Save the image
+	if (stream) {
+		stream.pipe(out);
 	}
 }
 
@@ -412,27 +448,6 @@ function addPost(title, content, user) {
 	}
 	user.posts.push(post);
 	posts.push(post);
-}
-
-// Function to generate an image avatar
-function generateAvatar(letter, width = 100, height = 100) {
-	const canvas = cvs.createCanvas(width, height);
-	const context = canvas.getContext('2d');
-
-	// Fill background with random color
-	context.fillStyle = '#' + Math.floor(Math.random() * 16777215).toString(16);
-	context.fillRect(0, 0, width, height);
-
-	// Draw the letter
-	context.fillStyle = '#FFFFFF'; // White color for text
-	context.font = '70px Arial';
-	context.textAlign = 'center';
-	context.textBaseline = 'middle';
-
-	// Draw the letter
-	context.fillText(letter, width / 2, height / 2);	
-	const stream = canvas.createPNGStream();
-	return stream;
 }
 
 // Creates new time in the format provided

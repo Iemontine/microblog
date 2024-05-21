@@ -55,26 +55,36 @@ header .profile-picture {
 	vertical-align: middle;
 }
 @media (max-width: 560px) {
-	.profile-picture
+	header .profile-picture
 	{
 		display: none;
 	}
 }
 /* ================================ POSTS ================================ */
 .post, form {
-	display: flex;
-	flex-direction: column;
-	background-color: #0D131B;
-	border-radius: 8px;
-	padding: 10px;
-	max-width: 925px;
-	position: relative;
-	margin: 0px auto;
-	margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    background-color: #0D131B;
+    border-radius: 8px;
+    padding: 10px;
+    max-width: 925px;
+    position: relative;
+    margin: 20px auto;
 }
-.post-content p {
+.post-content h1 {
+	font-size: 20px;
+}
+.post-content p, .post-content h1 {
 	margin-top: 0;
 	color: #D3D4D5;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+}
+.post-avatar {
+	display: flex;
+    align-items: center;
+    gap: 10px;
+	min-width: 200px;
 }
 .post-avatar .profile-picture {
 	width: 50px;
@@ -89,10 +99,18 @@ header .profile-picture {
 	list-style-type: none;
 	padding-left: 0;
 }
-.posts-list h1, .post-content h1 {
+.posts-list h1 {
 	font-size: 20px;
 	margin-top: 0;
 	color: #D3D4D5;
+	word-wrap: break-word;
+    white-space: pre-wrap;
+}
+.post-status-bar {
+    display: flex;
+	flex-direction: right;
+	align-items: center;
+	gap: 10px;
 }
 .post-status-bar button {
 	position: relative;
@@ -103,9 +121,22 @@ header .profile-picture {
 	background-color: #0D131B;
 	border-radius: 8px;
 }
-.post-status-bar span {
+.post-status-bar span, .post-avatar span {
 	font-size: 12px;
 	color: #999;
+	margin-left: auto;
+}
+.post-avatar {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.post-content {
+	position: relative;
+    padding-bottom: 30px;
 }
 
 /* ================================ USER-POSTS ================================ */
@@ -161,6 +192,9 @@ header .profile-picture {
 	border-radius: 8px;
 }
 
+/* ================================ USER FORM ================================ */
+
+
 #input-container {
     display: flex;
     flex-direction: column;
@@ -183,26 +217,37 @@ header .profile-picture {
 	margin-top: 10px;
     min-height: 100px;
     text-overflow: clip;
-    resize: none;
 	font-size: 15px;
 }
 .post-form #form-actions {
 	grid-column: 1 / -1;
+	
 }
 
+/* ================================ EMOJI STUFF ================================ */
+#emoji-container {
+	padding: 20px;
+}
 
 /* ================================ FOOTER ================================ */
 footer p {
+	z-index: 0;
 	position: fixed;
 	font-size: 13px;
 	color:#C5C3C0;
 	left: 10px;
 	bottom: 0;
 }
+@media (max-width: 560px) {
+	footer p {
+		display: none;
+	}
+}
 
 /* ============================= LOGIN/REGISTER ============================= */
 .login-register {
 	width: 100%;
+	padding: 20px;
 	display: flex;
 	position: absolute;
 	flex-direction: column;
@@ -217,12 +262,14 @@ footer p {
 }
 .login-area, .register-area {
 	margin: 20px;
+	margin-top: 0px;
 }
 
 input[type="text"] {
 	width: 100%;
 	padding: 10px;
 	margin: 10px 0;
+	margin-top: 0px;
 	box-sizing: border-box;
 	background-color: #2C3E50;
 	color: #ecf0f1;
@@ -234,7 +281,6 @@ input[type="text"] {
 button[type="submit"] {
 	width: 100%;
 	padding: 10px;
-	margin: 10px 0;
 	background: linear-gradient(to right, #FF6347, #ba3b25);
 	border: none;
 	border-radius: 4px;
@@ -247,7 +293,11 @@ button[type="submit"]:hover {
 	background: linear-gradient(to right, #ff8772, #ba3b25);
 }
 .login-area h2, .register-area h2 {
+	margin-left: 8px;
 	font-family: 'MotivaSansThin', Arial, Helvetica, sans-serif;
 	font-size: 16px;
 	color: #FF6347;
+}
+.login-area p {
+	margin-left: 8px;
 }
