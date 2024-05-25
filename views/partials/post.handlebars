@@ -1,9 +1,9 @@
 {{! Partial for a single post }}
 <div class="post">
-    <div class="post-content preserve-newlines">
-        <h1>{{this.title}}</h1>
-        <p>{{this.content}}</p>
-    </div>
+	<div class="post-content preserve-newlines">
+		<h1>{{this.title}}</h1>
+		<p>{{this.content}}</p>
+	</div>
 	<div class="post-avatar" onload="getAvatar(event)">
 		<img src="{{this.avatar_url}}" alt="{{this.username}}" class="profile-picture">
 		{{!-- TODO: proper styling for stacking the username and timestamp on top of eachother using flex --}}

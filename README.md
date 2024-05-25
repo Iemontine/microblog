@@ -6,6 +6,7 @@ npm install express-handlebars
 npm install express-session
 npm install canvas
 npm install dotenv
+npm install googleapis
 ```
 
 Start server:

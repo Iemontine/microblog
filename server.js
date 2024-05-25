@@ -112,6 +112,12 @@ app.get('/login', (req, res) => {
 	res.render('loginRegister', { loginError: req.query.error });
 });
 
+app.get('/home', (req, res) => {
+	const posts = getPosts();
+	const user = getCurrentUser(req) || {};
+	res.render('home', { posts, user, titleError: req.query.error, content: req.query.content });
+});
+
 // Error route: render error page
 app.get('/error', (req, res) => {
 	res.render('error');
@@ -133,8 +139,12 @@ app.post('/posts', (req, res) => {
 		let title = req.body.title;
 		let content = req.body.content;
 		let user = findUserById(req.session.userId);
-		addPost(title, content, user);
-		res.redirect('/');
+		if (title === '') {
+			res.redirect(`/home?error=Title%20required&content=${content}`);
+		} else {
+			addPost(title, content, user);
+			res.redirect('/');
+		}
 	} catch (error) {
 		console.error(error);
 	}
@@ -218,11 +228,11 @@ app.listen(PORT, () => {
 // TODO: new lines don't look so good rn, need to somehow replace with <br>
 let posts = [];
 let users = [
-    { id: 1, username: 'Ellen958', avatar_url: generateAvatar('E', './public/images/Ellen958.png'), memberSince: '1958-01-26 12:00' },
-    { id: 2, username: 'CourseAssist.ai', avatar_url: generateAvatar('C', './public/images/CourseAssist.ai.png'), memberSince: '2024-05-20 13:37' },
+	{ id: 1, username: 'Ellen958', avatar_url: generateAvatar('E', './public/images/Ellen958.png'), memberSince: '1958-01-26 12:00' },
+	{ id: 2, username: 'CourseAssist.ai', avatar_url: generateAvatar('C', './public/images/CourseAssist.ai.png'), memberSince: '2024-05-20 13:37' },
 ];
-addPost('ellen degeneres joke', 'Why did the scarecrow get a promotion? \n Because it was outstanding in its field!!!!', findUserById(1))
-addPost('Extremely Funny Joke', 'Why do APIs always carry umbrellas? Because they can’t handle a downpour of requests!', findUserById(2))
+addPost('Why did the scarecrow get a promotion?', 'Because it was outstanding in its field!!!!', findUserById(1))
+addPost('Why do APIs always carry umbrellas?', 'Because they can’t handle a downpour of requests!', findUserById(2))
 
 
 // Function to find a user by username
@@ -274,8 +284,11 @@ function isAuthenticated(req, res, next) {
 // Function to register a user
 function registerUser(req, res) {
 	let userName = req.body.userName;
+	
 	let existingUser = findUserByUsername(userName);
-	if (existingUser) {
+	if (userName === '') {
+		res.redirect('/register?error=Input%20required');
+	} else if (existingUser) {
 		res.redirect('/register?error=User%20already%20exists');
 	} else {
 		let user = addUser(userName);
@@ -312,7 +325,9 @@ function addUser(username) {
 function loginUser(req, res) {
 	let userName = req.body.userName;
 	let user = findUserByUsername(userName);
-	if (user) {
+	if (userName === '') {
+		res.redirect('/login?error=Input%20required');
+	} else if (user) {
 		// req.session.user = user;
 		req.session.userId = user.id;
 		req.session.loggedIn = true;
