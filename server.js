@@ -228,11 +228,11 @@ app.listen(PORT, () => {
 // TODO: new lines don't look so good rn, need to somehow replace with <br>
 let posts = [];
 let users = [
-    { id: 1, username: 'Ellen958', avatar_url: generateAvatar('E', './public/images/Ellen958.png'), memberSince: '1958-01-26 12:00' },
-    { id: 2, username: 'CourseAssist.ai', avatar_url: generateAvatar('C', './public/images/CourseAssist.ai.png'), memberSince: '2024-05-20 13:37' },
+	{ id: 1, username: 'Ellen958', avatar_url: generateAvatar('E', './public/images/Ellen958.png'), memberSince: '1958-01-26 12:00' },
+	{ id: 2, username: 'CourseAssist.ai', avatar_url: generateAvatar('C', './public/images/CourseAssist.ai.png'), memberSince: '2024-05-20 13:37' },
 ];
-addPost('ellen degeneres joke', 'Why did the scarecrow get a promotion? \n Because it was outstanding in its field!!!!', findUserById(1))
-addPost('Extremely Funny Joke', 'Why do APIs always carry umbrellas? Because they can’t handle a downpour of requests!', findUserById(2))
+addPost('Why did the scarecrow get a promotion?', 'Because it was outstanding in its field!!!!', findUserById(1))
+addPost('Why do APIs always carry umbrellas?', 'Because they can’t handle a downpour of requests!', findUserById(2))
 
 
 // Function to find a user by username

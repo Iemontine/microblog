@@ -66,16 +66,17 @@ header .profile-picture {
 /* ================================ POSTS ================================ */
 .content-container {
 	padding-bottom: 20px;
+	padding-inline: 20px;
 }
 .post, form {
-    display: flex;
-    flex-direction: column;
-    background-color: #0D131B;
-    border-radius: 8px;
-    padding: 10px;
-    max-width: 925px;
-    position: relative;
-    margin: 20px auto;
+	display: flex;
+	flex-direction: column;
+	background-color: #0D131B;
+	border-radius: 8px;
+	padding: 10px;
+	max-width: 925px;
+	position: relative;
+	margin: 20px auto;
 	z-index: 2;
 }
 .post-content h1 {
@@ -89,7 +90,7 @@ header .profile-picture {
 }
 .post-avatar {
 	display: flex;
-    gap: 0px;
+	gap: 0px;
 	min-width: 200px;
 }
 .post-avatar .profile-picture {
@@ -102,12 +103,12 @@ header .profile-picture {
 	overflow: hidden;
 }
 .post-avatar {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 .post-avatar span {
 	font-size: 12px;
@@ -123,10 +124,10 @@ header .profile-picture {
 	margin-top: 0;
 	color: #D3D4D5;
 	word-wrap: break-word;
-    white-space: pre-wrap;
+	white-space: pre-wrap;
 }
 .post-status-bar {
-    display: flex;
+	display: flex;
 	flex-direction: right;
 	align-items: center;
 	gap: 10px;
@@ -147,7 +148,7 @@ header .profile-picture {
 }
 .post-content {
 	position: relative;
-    padding-bottom: 30px;
+	padding-bottom: 30px;
 }
 .noPosts {
 	color: #D3D4D5;
@@ -195,6 +196,8 @@ header .profile-picture {
 	width: 100%;
 	color: #C5C3C0;
 }
+
+
 #profile-screen {
 	padding-inline: 20px;
 }
@@ -239,27 +242,27 @@ header .profile-picture {
 
 
 #input-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
 }
 .post-form input[name="title"], .post-form textarea[name="content"] {
 	margin: 0;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 10px;
-    background-color: #2C3E50;
-    color: #ecf0f1;
-    border: 1px solid #34495e;
-    border-radius: 4px;
-    font-size: 16px;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 10px;
+	background-color: #2C3E50;
+	color: #ecf0f1;
+	border: 1px solid #34495e;
+	border-radius: 4px;
+	font-size: 16px;
 	font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
 }
 
 .post-form textarea[name="content"] {
 	margin-top: 10px;
-    min-height: 100px;
-    text-overflow: clip;
+	min-height: 100px;
+	text-overflow: clip;
 	font-size: 15px;
 }
 .post-form #form-actions {
@@ -283,20 +286,27 @@ footer p {
 }
 
 /* ============================= LOGIN/REGISTER ============================= */
+.login-container {
+	padding-inline: 20px;
+	padding-top: 20px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 .login-register {
 	width: 100%;
 	padding: 20px;
 	display: flex;
-	position: absolute;
+	/* position: absolute; */
 	flex-direction: column;
 	background-color: #0D131B;
 	color:#C5C3C0;
 	border-radius: 8px;
 	max-width: 600px;
 	height: fit-content;
-	top: 50%;
+	/* top: 50%;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%); */
 }
 .login-area, .register-area {
 	margin: 20px;
@@ -351,5 +361,8 @@ button[type="submit"]:hover {
 	}
 	.logo h1 {
 		font-size: 4.5vw;
+	}
+	#profile-container {
+		flex-direction: column;
 	}
 }
