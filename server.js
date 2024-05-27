@@ -402,20 +402,11 @@ function updatePostLikes(req, res) {
 }
 
 // Function to delete post
-function deletePost(req, res) {
+async function deletePost(req, res) {
 	try {
 		const postId = parseInt(req.params.id);
-		let post = findPostById(postId);
-		let user = findUserById(req.session.userId)
-		let userIndex = user.posts.indexOf(post);
-		let postsIndex = posts.indexOf(post);
-		if (postsIndex !== -1 && userIndex !== -1) {	// TODO: CONTINUE HERE
-			posts.splice(postsIndex, 1);
-			user.posts.splice(userIndex, 1);
-			res.sendStatus(200);
-		} else {
-			throw new Error("post does not exist");
-		}
+		await db.run('DELETE FROM posts WHERE id = ?', [postId]);
+		res.sendStatus(200);
 	} catch (error) {
 		console.error(error);
 	}
@@ -469,17 +460,7 @@ async function getPosts() {
 
 // Function to add a new post
 async function addPost(title, content, user) {
-	// let post = {
-	// 	id: posts.length,
-	// 	title: title,
-	// 	content: content,
-	// 	username: user.username,
-	// 	timestamp: getNewTimeStamp(),
-	// 	likes: 0,
-	// 	avatar_url: user.avatar_url,
-	// }
 	await db.run('INSERT INTO posts (title, content, username, timestamp, likes) VALUES (?, ?, ?, ?, ?)', [title, content, user.username, getNewTimeStamp(), 0])
-	
 }
 
 // Creates new time in the format provided
