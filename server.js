@@ -6,13 +6,19 @@ const session = require('express-session');
 const cvs = require('canvas');
 const dotenv = require('dotenv').config();
 const fs = require('fs');
+const sqlite = require('sqlite');
+const sqlite3 = require('sqlite3');
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 const app = express();
 const PORT = 3000;
-
+let db;
+(async () => {
+	db = await sqlite.open({ filename: 'your_database_file.db', driver: sqlite3.Database });
+	console.log("Opening DB");
+})(); 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Handlebars Helpers
@@ -95,10 +101,10 @@ app.use(express.json());
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Home route: render home view with posts and user
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
 	// Pass the posts and user variables into the home template
-	const posts = getPosts();
-	const user = getCurrentUser(req) || {};
+	const posts = await getPosts();
+	const user = await getCurrentUser(req) || {};
 	res.render('home', { posts, user });
 });
 
@@ -112,9 +118,9 @@ app.get('/login', (req, res) => {
 	res.render('loginRegister', { loginError: req.query.error });
 });
 
-app.get('/home', (req, res) => {
-	const posts = getPosts();
-	const user = getCurrentUser(req) || {};
+app.get('/home', async (req, res) => {
+	const posts = await getPosts();
+	const user = await getCurrentUser(req) || {};
 	res.render('home', { posts, user, titleError: req.query.error, content: req.query.content });
 });
 
@@ -174,9 +180,8 @@ app.post('/register', (req, res) => {
 // Login route: login a user
 app.post('/login', (req, res) => {
 	try {
-		if(loginUser(req, res)) {
-			handleAvatar(req, res);
-		}
+		loginUser(req, res);
+			
 	} catch (error) {
 		console.error(error);
 	}
@@ -226,31 +231,31 @@ app.listen(PORT, () => {
 
 // Emulate pre-existing data
 // TODO: new lines don't look so good rn, need to somehow replace with <br>
-let posts = [];
-let users = [
-	{ id: 1, username: 'Ellen958', avatar_url: generateAvatar('E', './public/images/Ellen958.png'), memberSince: '1958-01-26 12:00' },
-	{ id: 2, username: 'CourseAssist.ai', avatar_url: generateAvatar('C', './public/images/CourseAssist.ai.png'), memberSince: '2024-05-20 13:37' },
-];
-addPost('Why did the scarecrow get a promotion?', 'Because it was outstanding in its field!!!!', findUserById(1))
-addPost('Why do APIs always carry umbrellas?', 'Because they can’t handle a downpour of requests!', findUserById(2))
+// let posts = [];
+// let users = [
+// 	{ id: 1, username: 'Ellen958', avatar_url: generateAvatar('E', './public/images/Ellen958.png'), memberSince: '1958-01-26 12:00' },
+// 	{ id: 2, username: 'CourseAssist.ai', avatar_url: generateAvatar('C', './public/images/CourseAssist.ai.png'), memberSince: '2024-05-20 13:37' },
+// ];
+// addPost('Why did the scarecrow get a promotion?', 'Because it was outstanding in its field!!!!', findUserById(1))
+// addPost('Why do APIs always carry umbrellas?', 'Because they can’t handle a downpour of requests!', findUserById(2))
 
 
 // Function to find a user by username
-function findUserByUsername(username) {
-	let user = users.find(user => user.username === username);
+async function findUserByUsername(username) {
+	let user = db.get('SELECT * FROM users WHERE username = ?', [username]);
 	if (user) {
 		return user;
 	}
-	return undefined;
+	return null;
 }
 
 // Function to find a user by user ID
-function findUserById(userId) {
-	let user = users.find(user => user.id === userId);
+async function findUserById(userId) {
+	let user = db.get('SELECT * FROM users WHERE id = ?', [userId]);
 	if (user) {
 		return user;
 	}
-	return undefined;
+	return null;
 }
 
 // Function to find a post by post ID
@@ -263,8 +268,8 @@ function findPostById(postId) {
 }
 
 // Function to get the current user from session
-function getCurrentUser(req) {
-	let user = findUserById(req.session.userId);
+async function getCurrentUser(req) {
+	let user = await findUserById(req.session.userId);
 	if (user) {
 		return user;
 	}
@@ -283,15 +288,15 @@ function isAuthenticated(req, res, next) {
 
 // Function to register a user
 function registerUser(req, res) {
-	let userName = req.body.userName;
+	let username = req.body.username;
 	
-	let existingUser = findUserByUsername(userName);
-	if (userName === '') {
+	let existingUser = findUserByUsername(username);
+	if (username === '') {
 		res.redirect('/register?error=Input%20required');
 	} else if (existingUser) {
 		res.redirect('/register?error=User%20already%20exists');
 	} else {
-		let user = addUser(userName);
+		let user = addUser(username);
 		console.log(users);
 		// req.session.user = user;
 		req.session.userId = user.id;
@@ -322,10 +327,11 @@ function addUser(username) {
 }
 
 // Function to login a user
-function loginUser(req, res) {
-	let userName = req.body.userName;
-	let user = findUserByUsername(userName);
-	if (userName === '') {
+async function loginUser(req, res) {
+	let username = req.body.username;
+	let user = await findUserByUsername(username);
+	console.log(user);
+	if (username === '') {
 		res.redirect('/login?error=Input%20required');
 	} else if (user) {
 		// req.session.user = user;
@@ -405,7 +411,7 @@ function deletePost(req, res) {
 
 // Function to handle avatar generation and serving
 function handleAvatar(req, res) {
-	const username = req.body.userName;
+	const username = req.body.username;
 	const user = findUserByUsername(username);
 	if (!user.avatar_url) {
 		const firstLetter = username.charAt(0).toUpperCase();
@@ -444,8 +450,9 @@ function generateAvatar(letter, url, width = 100, height = 100) {
 }
 
 // Function to get all posts, sorted by latest first
-function getPosts() {
-	return posts.slice().reverse();
+async function getPosts() {
+	let posts = await db.all('SELECT * FROM posts');
+	return posts;
 }
 
 // Function to add a new post
