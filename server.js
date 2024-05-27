@@ -171,7 +171,6 @@ app.post('/like/:id', (req, res) => {
 app.post('/register', (req, res) => {
 	try {
 		registerUser(req, res);
-		handleAvatar(req, res);
 	} catch (error) {
 		console.error(error);
 	}
@@ -287,19 +286,18 @@ function isAuthenticated(req, res, next) {
 }
 
 // Function to register a user
-function registerUser(req, res) {
+async function registerUser(req, res) {
 	let username = req.body.username;
 	
-	let existingUser = findUserByUsername(username);
+	let existingUser = await findUserByUsername(username);
 	if (username === '') {
 		res.redirect('/register?error=Input%20required');
 	} else if (existingUser) {
 		res.redirect('/register?error=User%20already%20exists');
 	} else {
-		let user = addUser(username);
-		console.log(users);
+		let userId = await addUser(username);
 		// req.session.user = user;
-		req.session.userId = user.id;
+		req.session.userId = userId;
 		req.session.loggedIn = true;
 		req.session.save((err) => {
 			if (err) {
@@ -313,17 +311,31 @@ function registerUser(req, res) {
 }
 
 // Function to add a new user
-function addUser(username) {
+async function addUser(username) {
 	// TODO: Create a new user object and add to users array
 	let timeStamp = getNewTimeStamp();
 	let user = {
-		id: users.length + 1,
 		username: username,
-		avatar_url: undefined,
+		hashedGoogleId: "BLAH",
 		memberSince: timeStamp,
 	}
-	users.push(user);
-	return user;
+	await db.run(
+		'INSERT INTO users (username, hashedGoogleId, avatar_url, memberSince) VALUES (?, ?, ?, ?)',
+		[user.username, user.hashedGoogleId, '', user.memberSince], (err) => {
+			if (err) {
+				console.error(err.message);
+			} else {
+				console.log("User added!");
+			}
+		});
+	let id = await db.get('SELECT id FROM users WHERE username = ?', [username], (error) => {
+		if (error) {
+			console.error(error);
+		} else {
+			console.log("Got ID!");
+		}
+	});
+	return id.id;
 }
 
 // Function to login a user

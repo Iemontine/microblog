@@ -15,7 +15,6 @@ async function initializeDB() {
             username TEXT NOT NULL UNIQUE,
             hashedGoogleId TEXT NOT NULL UNIQUE,
             avatar_url TEXT,
-            postsLikedId TEXT,
             memberSince DATETIME NOT NULL
         );
 
@@ -43,8 +42,8 @@ async function initializeDB() {
     // Insert sample data into the database
     await Promise.all(users.map(user => {
         return db.run(
-            'INSERT INTO users (username, hashedGoogleId, avatar_url, postsLikedId, memberSince) VALUES (?, ?, ?, ?, ?)',
-            [user.username, user.hashedGoogleId, user.avatar_url, [], user.memberSince]
+            'INSERT INTO users (username, hashedGoogleId, avatar_url, memberSince) VALUES (?, ?, ?, ?)',
+            [user.username, user.hashedGoogleId, user.avatar_url, user.memberSince]
         );
     }));
 
