@@ -140,15 +140,15 @@ app.get('/avatar/:username', (req, res) => {
 });
 
 // Post route: add a new post
-app.post('/posts', (req, res) => {
+app.post('/posts', async (req, res) => {
 	try {
 		let title = req.body.title;
 		let content = req.body.content;
-		let user = findUserById(req.session.userId);
+		let user = await findUserById(req.session.userId);
 		if (title === '') {
 			res.redirect(`/home?error=Title%20required&content=${content}`);
 		} else {
-			addPost(title, content, user);
+			await addPost(title, content, user);
 			res.redirect('/');
 		}
 	} catch (error) {
@@ -468,21 +468,18 @@ async function getPosts() {
 }
 
 // Function to add a new post
-function addPost(title, content, user) {
-	let post = {
-		id: posts.length,
-		title: title,
-		content: content,
-		username: user.username,
-		timestamp: getNewTimeStamp(),
-		likes: 0,
-		avatar_url: user.avatar_url,
-	}
-	if (!('posts' in user)) {
-		user.posts = [];
-	}
-	user.posts.push(post);
-	posts.push(post);
+async function addPost(title, content, user) {
+	// let post = {
+	// 	id: posts.length,
+	// 	title: title,
+	// 	content: content,
+	// 	username: user.username,
+	// 	timestamp: getNewTimeStamp(),
+	// 	likes: 0,
+	// 	avatar_url: user.avatar_url,
+	// }
+	await db.run('INSERT INTO posts (title, content, username, timestamp, likes) VALUES (?, ?, ?, ?, ?)', [title, content, user.username, getNewTimeStamp(), 0])
+	
 }
 
 // Creates new time in the format provided
