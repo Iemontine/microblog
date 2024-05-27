@@ -258,8 +258,8 @@ async function findUserById(userId) {
 }
 
 // Function to find a post by post ID
-function findPostById(postId) {
-	let post = posts.find(post => post.id === postId);
+async function findPostById(postId) {
+	let post = db.get('SELECT * FROM posts WHERE id = ?', [postId]);
 	if (post) {
 		return post;
 	}
@@ -379,7 +379,7 @@ async function renderProfile(req, res) {
 }
 
 async function getUserPosts(user) {
-	let posts = db.all('SELECT * FROM posts WHERE username = ?', [user.username]);
+	let posts = await db.all('SELECT * FROM posts WHERE username = ?', [user.username]);
 	return posts;
 }
 
