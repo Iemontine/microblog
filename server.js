@@ -297,6 +297,8 @@ async function registerUser(req, res) {
 	} else {
 		let userId = await addUser(username);
 		// req.session.user = user;
+		const url = './public/images/' + username + '.png';
+		await generateAvatar(username, url);
 		req.session.userId = userId;
 		req.session.loggedIn = true;
 		req.session.save((err) => {
@@ -347,6 +349,10 @@ async function loginUser(req, res) {
 		res.redirect('/login?error=Input%20required');
 	} else if (user) {
 		// req.session.user = user;
+		if (!user.avatar_url) {
+			const url = './public/images/' + username + '.png';
+			await generateAvatar(username, url);
+		}	
 		req.session.userId = user.id;
 		req.session.loggedIn = true;
 		req.session.save((err) => {
@@ -419,19 +425,21 @@ async function deletePost(req, res) {
 }
 
 // Function to handle avatar generation and serving
-function handleAvatar(req, res) {
+async function handleAvatar(req, res) {
 	const username = req.body.username;
-	const user = findUserByUsername(username);
+	const user = await findUserByUsername(username);
 	if (!user.avatar_url) {
-		const firstLetter = username.charAt(0).toUpperCase();
 		const url = './public/images/' + username + '.png';
-		user.avatar_url = '/images/' + username + '.png';
-		generateAvatar(firstLetter, url);
+		generateAvatar(username, url);
+		url = '/images/' + username + '.png';
+		await db.run('UPDATE users SET avatar_url = ? WHERE username = ?', [url, username]);
 	}
 }
 
 // Function to generate an image avatar
-function generateAvatar(letter, url, width = 100, height = 100) {
+async function generateAvatar(username, url, width = 100, height = 100) {
+	const letter = username.charAt(0).toUpperCase();
+
 	const canvas = cvs.createCanvas(width, height);
 	const context = canvas.getContext('2d');
 
@@ -453,6 +461,9 @@ function generateAvatar(letter, url, width = 100, height = 100) {
 	// Save the image
 	if (stream) {
 		stream.pipe(out);
+		url = '/images/' + username + '.png';
+		await db.run('UPDATE users SET avatar_url = ? WHERE username = ?', [url, username]);
+
 		return url.replace('./public', '');
 	}
 	return undefined;
