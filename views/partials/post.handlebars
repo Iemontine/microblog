@@ -5,7 +5,7 @@
 		<p>{{this.content}}</p>
 	</div>
 	<div class="post-avatar" onload="getAvatar(event)">
-		<img src="{{this.avatar_url}}" alt="{{this.username}}" class="profile-picture">
+		<img src="/images/{{this.username}}.png" alt="{{this.username}}" class="profile-picture">
 		{{!-- TODO: proper styling for stacking the username and timestamp on top of eachother using flex --}}
 		<span>Posted by {{this.username}} on {{this.timestamp}}</span>
 		{{!-- <span>on {{this.timestamp}}</span> --}}

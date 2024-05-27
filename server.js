@@ -18,6 +18,8 @@ let db;
 (async () => {
 	db = await sqlite.open({ filename: 'your_database_file.db', driver: sqlite3.Database });
 	console.log("Opening DB");
+	createUserAvatars();
+
 })(); 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,6 +110,8 @@ app.get('/', async (req, res) => {
 	res.render('home', { posts, user });
 });
 
+
+		
 // Register GET route is used for error response from registration
 app.get('/register', (req, res) => {
 	res.render('loginRegister', { regError: req.query.error });
@@ -490,4 +494,14 @@ function getNewTimeStamp() {
 	const minute = date.getMinutes();
 	let timeStamp = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
 	return timeStamp;
+}
+
+async function createUserAvatars() {
+	const users = await db.all('SELECT * FROM users');
+	await Promise.all(users.map(user => {
+		if (!user.avatar_url) {
+			const url = './public/images/' + user.username + '.png';
+			generateAvatar(user.username, url);
+		}
+	}))
 }
