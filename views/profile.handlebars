@@ -16,9 +16,9 @@
 		<h2>Your {{{postNeoType}}}s</h2>
 		
 		<!-- Conditionally show all of the user's posts -->
-		{{#if user.posts}}
+		{{#if posts}}
 			<ul>
-				{{#each user.posts}}
+				{{#each posts}}
 					{{> post this user=../user}}
 				{{/each}}
 			</ul>

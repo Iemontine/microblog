@@ -371,10 +371,16 @@ function logoutUser(req, res) {
 }
 
 // Function to render the profile page
-function renderProfile(req, res) {
+async function renderProfile(req, res) {
 	let userId = req.session.userId;
-	const user = findUserById(userId);
-	res.render('profile', {user});
+	const user = await findUserById(userId);
+	let posts = await getUserPosts(user);
+	res.render('profile', {user, posts});
+}
+
+async function getUserPosts(user) {
+	let posts = db.all('SELECT * FROM posts WHERE username = ?', [user.username]);
+	return posts;
 }
 
 // Function to update post likes
