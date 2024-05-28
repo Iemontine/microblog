@@ -165,12 +165,9 @@ app.post('/posts', upload.single('image'), async (req, res) => {
 		// console.log(image);
 		let user = await findUserById(req.session.userId);
 
-		if (title === '') {
-			res.redirect(`/home?error=Title%20required&content=${content}`);
-		} else {
+		
 			await addPost(title, content, user, image);
 			res.redirect('/');
-		}
 	} catch (error) {
 		console.error(error);
 	}

@@ -246,6 +246,7 @@ header .profile-picture {
 	flex-direction: column;
 	width: 100%;
 }
+
 .post-form input[name="title"], .post-form textarea[name="content"] {
 	margin: 0;
 	width: 100%;
