@@ -3,6 +3,9 @@
 	<div class="post-content preserve-newlines">
 		<h1>{{this.title}}</h1>
 		<p>{{this.content}}</p>
+		{{#if this.image_url}}
+			<img src={{this.image_url}} alt="post image">
+		{{/if}}
 	</div>
 	<div class="post-avatar" onload="getAvatar(event)">
 		<img src="/images/{{this.username}}.png" alt="{{this.username}}" class="profile-picture">

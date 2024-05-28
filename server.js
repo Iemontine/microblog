@@ -9,6 +9,8 @@ const fs = require('fs');
 const sqlite = require('sqlite');
 const sqlite3 = require('sqlite3');
 const { userInfo } = require('os');
+const multer = require('multer');
+const path = require('path');
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -99,6 +101,16 @@ app.use(express.urlencoded({ extended: true }));
 // Parse JSON bodies (as sent by API clients)
 app.use(express.json());
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './public/uploads/')
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname))
+  }
+});
+const upload = multer({ storage: storage });
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Routes
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -145,15 +157,18 @@ app.get('/avatar/:username', (req, res) => {
 });
 
 // Post route: add a new post
-app.post('/posts', async (req, res) => {
+app.post('/posts', upload.single('image'), async (req, res) => {
 	try {
 		let title = req.body.title;
 		let content = req.body.content;
+		let image = req.file.filename || '';
+		// console.log(image);
 		let user = await findUserById(req.session.userId);
+
 		if (title === '') {
 			res.redirect(`/home?error=Title%20required&content=${content}`);
 		} else {
-			await addPost(title, content, user);
+			await addPost(title, content, user, image);
 			res.redirect('/');
 		}
 	} catch (error) {
@@ -479,8 +494,8 @@ async function getPosts() {
 }
 
 // Function to add a new post
-async function addPost(title, content, user) {
-	await db.run('INSERT INTO posts (title, content, username, timestamp, likes) VALUES (?, ?, ?, ?, ?)', [title, content, user.username, getNewTimeStamp(), 0])
+async function addPost(title, content, user, image='') {
+	await db.run('INSERT INTO posts (title, content, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?)', [title, content, '/uploads/' + image, user.username, getNewTimeStamp(), 0])
 }
 
 // Creates new time in the format provided
