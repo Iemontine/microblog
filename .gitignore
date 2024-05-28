@@ -1,6 +1,6 @@
 node_modules
 *.json
 *.png
-.env+
+.env
 *.sh
 *.db
