@@ -3,15 +3,14 @@
 <div class="login-container">
 	<section class="login-register">
 		<section class = "login-area">
-			<h2>LOG IN WITH ACCOUNT NAME</h2>
+			<h2>LOG IN TO AN EXISTING ACCOUNT</h2>
 			<!-- Error handling -->
 			{{#if loginError}}
 				<p style="color: red;">{{loginError}}</p>
 			{{/if}}
 			<!-- Login form -->
 			<form id="login" action="/login" method="POST">
-				<input type="text" name="userName" id="loginUserName">
-				<button type="submit">LOGIN</button>
+				<button type="submit">LOG IN</button>
 			</form>
 		</section>
 		<section class = "register-area">
