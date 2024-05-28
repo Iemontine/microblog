@@ -8,6 +8,7 @@ const dotenv = require('dotenv').config();
 const fs = require('fs');
 const sqlite = require('sqlite');
 const sqlite3 = require('sqlite3');
+const { userInfo } = require('os');
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -279,6 +280,7 @@ async function getCurrentUser(req) {
 	return null;
 }
 
+
 // Middleware to check if user is authenticated
 function isAuthenticated(req, res, next) {
 	console.log(req.session.userId);
@@ -394,23 +396,20 @@ async function getUserPosts(user) {
 }
 
 // Function to update post likes
-function updatePostLikes(req, res) {
+async function updatePostLikes(req, res) {
 	try {
 		const postId = parseInt(req.params.id);
-		let post = findPostById(postId);
-		let currentUser = getCurrentUser(req);
-		if (currentUser) { // Ensure the user has been registered
-			if (!('postsLikedId' in currentUser)) {
-				currentUser.postsLikedId = [];
-			}
-			let index = currentUser.postsLikedId.indexOf(postId);
-			if (index !== -1) {
-				currentUser.postsLikedId.splice(index, 1);
-				post.likes--;
-			} else {
-				currentUser.postsLikedId.push(postId);
-				post.likes++;
-			}
+		let post = await findPostById(postId);
+		let currentUserId = req.session.userId;
+		let like = await db.get('SELECT * FROM likes WHERE user_id = ? AND post_id = ?', [currentUserId, postId]);
+		if (like) {
+			await db.run('DELETE FROM likes WHERE user_id = ? AND post_id = ?', 
+			[currentUserId, postId]);
+			await db.run('UPDATE posts SET likes = ? WHERE id = ?',[post.likes - 1, postId]);
+		} else {
+			await db.run('INSERT INTO likes (user_id, post_id, timestamp) VALUES (?, ?, ?)', 
+			[currentUserId, postId, getNewTimeStamp()]);
+			await db.run('UPDATE posts SET likes = ? WHERE id = ?',[post.likes + 1, postId]);
 		}
 	} catch (error) {
 		console.error(error);
