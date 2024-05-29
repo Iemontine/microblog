@@ -1,6 +1,7 @@
+"use strict";
+
 const express = require('express');
 const helper = require('./support');
-
 const multer = require('multer');
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -96,7 +97,7 @@ router.post('/like/:id', (req, res) => {
 // Register route: register a new user
 router.post('/register', (req, res) => {
 	try {
-		req.session.registeringUser = req.body.userName;
+		req.session.registeringUser = req.body.username;
 		req.session.registering = true;
 		res.redirect('/auth/google');
 	} catch (error) {

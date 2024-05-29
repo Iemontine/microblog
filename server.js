@@ -2,10 +2,7 @@
 
 const express = require('express');
 const expressHandlebars = require('express-handlebars');
-const { google } = require('googleapis');
-const { OAuth2Client } = require('google-auth-library');
 const session = require('express-session');
-const path = require('path');
 
 const webRoutes = require('./helpers/webRoutes');
 const apiRoutes = require('./helpers/apiRoutes');

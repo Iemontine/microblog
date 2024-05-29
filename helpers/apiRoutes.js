@@ -1,3 +1,5 @@
+"use strict";
+
 const express = require('express');
 const { google } = require('googleapis');
 const fetch = require('node-fetch');
@@ -31,7 +33,6 @@ router.get('/auth/google/', (req, res) => {
 
 // Handle Google OAuth response
 router.get('/auth/google/callback', async (req, res) => {
-	
 	const { code } = req.query;
 	const { tokens } = await client.getToken(code);
 	client.setCredentials(tokens);
@@ -47,7 +48,7 @@ router.get('/auth/google/callback', async (req, res) => {
 		try {
 			// Register user, if successful generate avatar
 			if (helper.registerUser(req, res, userinfo)) {
-				helper.handleAvatar(req, res);
+				await helper.handleAvatar(req, res);
 			}
 		} catch (error) {
 			console.error(error);

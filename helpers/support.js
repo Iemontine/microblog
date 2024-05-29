@@ -1,3 +1,5 @@
+"use strict";
+
 const cvs = require('canvas');
 const dotenv = require('dotenv').config();
 const fs = require('fs');
@@ -65,7 +67,6 @@ async function getCurrentUser(req) {
 	return null;
 }
 
-
 // Middleware to check if user is authenticated
 function isAuthenticated(req, res, next) {
 	console.log(req.session.userId);
@@ -81,7 +82,7 @@ async function registerUser(req, res, userinfo) {
 	// Set username to either the user's input name or their Google name
 	let userName = req.session.registeringUser || userinfo.data.name;
 
-	let existingUser = findUserByUsername(userName);
+	let existingUser = await findUserByUsername(userName);
 	if (userName === '') {
 		res.redirect('/register?error=Input%20required');
 		return false;
@@ -91,8 +92,6 @@ async function registerUser(req, res, userinfo) {
 	} else {
 		let userId = await addUser(userName, userinfo.data.email);
 		// req.session.user = user;
-		const url = './public/images/' + userId + '.png';
-		await generateAvatar(userId, url);
 		req.session.userId = userId;
 		req.session.loggedIn = true;
 		req.session.save((err) => {
@@ -136,48 +135,6 @@ async function addUser(username, email) {
 	});
 	return id.id;
 }
-
-// Function to handle avatar generation and serving
-// function handleAvatar(req, res) {
-// 	const username = req.session.registeringUser;
-// 	const user = findUserByUsername(username);
-// 	req.session.registeringUser = undefined; // Clear the registering user, now unnecessary
-// 	if (!user.avatar_url) {
-// 		const firstLetter = username.charAt(0).toUpperCase();
-// 		const url = './public/images/' + username + '.png';
-// 		user.avatar_url = '/images/' + username + '.png';
-// 		generateAvatar(firstLetter, url);
-// 	}
-// }
-
-// lemontine's generateAvatar
-// // Function to generate an image avatar
-// function generateAvatar(letter, url, width = 100, height = 100) {
-// 	const canvas = cvs.createCanvas(width, height);
-// 	const context = canvas.getContext('2d');
-
-// 	// Fill background with random color
-// 	context.fillStyle = '#' + Math.floor(Math.random() * 16777215).toString(16);
-// 	context.fillRect(0, 0, width, height);
-
-// 	// Draw the letter
-// 	context.fillStyle = '#FFFFFF'; // White color for text
-// 	context.font = '70px Arial';
-// 	context.textAlign = 'center';
-// 	context.textBaseline = 'middle';
-
-// 	// Draw the letter
-// 	context.fillText(letter, width / 2, height / 2);
-// 	const stream = canvas.createPNGStream();
-
-// 	const out = fs.createWriteStream(url);
-// 	// Save the image
-// 	if (stream) {
-// 		stream.pipe(out);
-// 		return url.replace('./public', '');
-// 	}
-// 	return undefined;
-// }
 
 // Function to login a user
 async function loginUser(req, res, userinfo) {
@@ -259,20 +216,19 @@ async function deletePost(req, res) {
 
 // Function to handle avatar generation and serving
 async function handleAvatar(req, res) {
-	const username = req.body.username;
-	const user = await findUserByUsername(username);
+	const username = req.session.registeringUser;
+	const user = findUserByUsername(username);
+	req.session.registeringUser = undefined; // Clear the registering user, now unnecessary
 	if (!user.avatar_url) {
 		const url = './public/images/' + username + '.png';
-		generateAvatar(username, url);
-		url = '/images/' + username + '.png';
 		await db.run('UPDATE users SET avatar_url = ? WHERE username = ?', [url, username]);
+		await generateAvatar(username, url);
 	}
 }
 
 // Function to generate an image avatar
 async function generateAvatar(username, url, width = 100, height = 100) {
-	const letter = username.charAt(0).toUpperCase();
-
+	const firstLetter = username.charAt(0).toUpperCase();
 	const canvas = cvs.createCanvas(width, height);
 	const context = canvas.getContext('2d');
 
@@ -287,14 +243,13 @@ async function generateAvatar(username, url, width = 100, height = 100) {
 	context.textBaseline = 'middle';
 
 	// Draw the letter
-	context.fillText(letter, width / 2, height / 2);	
+	context.fillText(firstLetter, width / 2, height / 2);
 	const stream = canvas.createPNGStream();
-	
+
 	const out = fs.createWriteStream(url);
 	// Save the image
 	if (stream) {
 		stream.pipe(out);
-		url = '/images/' + username + '.png';
 		await db.run('UPDATE users SET avatar_url = ? WHERE username = ?', [url, username]);
 		return url.replace('./public', '');
 	}
@@ -326,10 +281,10 @@ function getNewTimeStamp() {
 
 async function createUserAvatars() {
 	const users = await db.all('SELECT * FROM users');
-	await Promise.all(users.map(user => {
+	await Promise.all(users.map(async user => {
 		if (!user.avatar_url) {
 			const url = './public/images/' + user.username + '.png';
-			generateAvatar(user.username, url);
+			await generateAvatar(user.username, url);
 		}
 	}))
 }
@@ -350,7 +305,6 @@ module.exports = {
 	getUserPosts,
 	updatePostLikes,
 	deletePost,
-	handleAvatar,
 	generateAvatar,
 	getPosts,
 	addPost,
