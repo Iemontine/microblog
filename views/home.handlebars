@@ -14,14 +14,18 @@
 							src="/images/default-avatar.png" alt="Default Profile Picture"
 						{{/if}} class="profile-picture">
 					<button type="button" id="emoji-button" onclick="toggleEmojiPanel()">😀</button>
-					<input type="file" name="image">
+					<button type="button" id="tag-button", onclick="toggleTagPanel()">Tag</button>
+					<button type="button" id="fileLabel"><label id="fileLabel" for="image">File</label></button>
+					<input type="file" id="image" name="image" hidden>
 				</div>
 				<div id="input-container">
 					{{#if titleError}}
 						<p style="color: red;">{{titleError}}</p>
 					{{/if}}
-					<input type="text" name="title" placeholder="Title">
-					<textarea type="text" name="content" placeholder="Content">{{content}}</textarea>
+					<input type="text" name="title" placeholder="Title" required>
+					<p id="chosenTag" class="tag" style="display: none;"></p>
+					<textarea type="text" name="content" placeholder="Content (optional)">{{content}}</textarea>
+					<input type="hidden" name="tag">
 				</div>
 				<div id="form-actions">
 					<button type="submit" class="post-button">Post</button>
@@ -31,6 +35,11 @@
 			<div id="emoji-container" class="emoji-panel" style="display: none;">
 				<input id="emoji-search" type="text" name="emojiSearch" placeholder="Search Emoji">
 				<div id="emoji-grid"></div>
+			</div>
+			<div id="tag-container" style="display: none;">
+				<div id="tag-grid">
+					<span></span>
+				</div>
 			</div>
 		</section>
 	{{/if}}
@@ -52,10 +61,59 @@
 
 {{! JavaScript for Emoji Integration }}
 <script>
+
+function toggleTagPanel() {
+	const container = document.getElementById('tag-container');
+	container.style.display = container.style.display === 'none' ? 'block' : 'none';
+	let tags = ['None','Dad Joke', 'Dark Humor', 'Ironic', 'One-liner', 'Self-deprecating', 'Computer Science', 'Meta Humor'];
+	displayTags(tags);
+}
+
+function displayTags(tags) {
+	const container = document.getElementById('tag-grid');
+	const emojiContainer = document.getElementById('emoji-container');
+	emojiContainer.style.display = 'none';
+	container.innerHTML = '';  // Clear previous results
+	if (Array.isArray(tags) && tags.length > 0) {
+		tags.forEach(tag => {
+			let tagElement = document.createElement('span');
+			tagElement.textContent = tag;
+			tagElement.style.cursor = 'pointer';
+			tagElement.classList.add('tag');
+			if (tag === 'None') {
+				tagElement.onclick = () => deleteTag();
+			} else {
+				tagElement.onclick = () => chooseTag(tag);
+			}
+			container.appendChild(tagElement);
+		});
+	} else {
+		container.textContent = 'No tags found.';
+	}
+}
+
+function chooseTag(tag) {
+	let tagInput = document.querySelector('input[name="tag"]');
+	tagInput.value = tag;
+	let chosenTag = document.getElementById('chosenTag');
+	chosenTag.innerHTML = '';
+	chosenTag.textContent = tag;
+	chosenTag.style.display = 'block';
+}
+
+function deleteTag() {
+	let tagInput = document.querySelector('input[name="tag"]');
+	tagInput.value = null;
+	let chosenTag = document.getElementById('chosenTag');
+	chosenTag.innerHTML = '';
+	chosenTag.style.display = 'none';
+}
 let allEmojis = [];  // Global list to hold all emojis
 
 // Toggles the emoji panel visibility
 function toggleEmojiPanel() {
+	const tagContainer = document.getElementById('tag-container');
+	tagContainer.style.display = 'none';
 	const container = document.getElementById('emoji-container');
 	container.style.display = container.style.display === 'none' ? 'block' : 'none';
 

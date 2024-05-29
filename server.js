@@ -169,19 +169,19 @@ app.post('/posts', upload.single('image'), async (req, res) => {
 	try {
 		let title = req.body.title;
 		let content = req.body.content;
-		let image = req.file.filename || '';
-		let user = findUserById(req.session.userId);
-		if (content === '' && title === '') {
-			res.redirect(`/home?error=Title%20and%20Content%20required`);
+		let tag = req.body.tag;
+		let image;
+		if (req.file) {
+			image = 'uploads/' + req.file.filename;
 		}
-		else if (content === '') {
-			res.redirect(`/home?error=Content%20required&title=${title}`);
-		}
-		else if (title === '') {
-			res.redirect(`/home?error=Title%20required&content=${content}`);
-		}
-		else {
-			addPost(title, content, user, image);
+		// console.log(image);
+		let user = await findUserById(req.session.userId);
+
+			if (image) {
+				await addPost(title, content, tag, user, image);
+			} else {
+				await addPost(title, content, tag, user);
+			}
 			res.redirect('/');
 	} catch (error) {
 		console.error(error);
@@ -544,8 +544,8 @@ async function getPosts() {
 }
 
 // Function to add a new post
-async function addPost(title, content, user, image='') {
-	await db.run('INSERT INTO posts (title, content, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?)', [title, content, '/uploads/' + image, user.username, getNewTimeStamp(), 0])
+async function addPost(title, content, tag, user, image='') {
+	await db.run('INSERT INTO posts (title, content, tag, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?, ?)', [title, content, tag, image, user.username, getNewTimeStamp(), 0])
 }
 
 // Creates new time in the format provided

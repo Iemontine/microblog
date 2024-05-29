@@ -79,23 +79,36 @@ header .profile-picture {
 	margin: 20px auto;
 	z-index: 2;
 }
+
+.post-header {
+	display: flex;
+	flex-direction: row;
+	gap: 15px;
+	align-items: center;
+}
 .post-content h1 {
 	font-size: 20px;
 }
 .post-content p, .post-content h1 {
-	margin-top: 0;
+	margin-block: 0;
 	color: #D3D4D5;
 	word-wrap: break-word;
 	white-space: pre-wrap;
 }
-.post-avatar {
+.post-body {
 	display: flex;
+	flex-direction: col;
+	
+}
+.post-footer {
+	display: flex;
+	justify-content: space-between;
 	gap: 0px;
 	min-width: 200px;
 }
-.post-avatar .profile-picture {
-	width: 50px;
-	height: 50px;
+.post-header .profile-picture {
+	width: 25px;
+	height: 25px;
 	border-radius: 10%;
 	border-width: 2px;
 	border-style: solid;
@@ -103,11 +116,11 @@ header .profile-picture {
 	overflow: hidden;
 }
 .post-avatar {
-	position: absolute;
+	/* position: absolute; */
 	bottom: 10px;
 	left: 10px;
 	display: flex;
-	align-items: center;
+	align-items:end;
 	gap: 10px;
 }
 .post-avatar span {
@@ -147,8 +160,17 @@ header .profile-picture {
 	margin-left: auto;
 }
 .post-content {
+	display: flex;
+	flex-direction: column;
 	position: relative;
-	padding-bottom: 30px;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+.post-image {
+	max-height: 300px;
+	object-fit: contain;
+	background-color: black;
+	border-radius: 10px;
 }
 .noPosts {
 	color: #D3D4D5;
@@ -189,7 +211,7 @@ header .profile-picture {
 	margin-top: 20px;
 	margin-inline: auto;
 	display:flex;
-	flex-direction: row;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	gap: 10px;
@@ -228,10 +250,10 @@ header .profile-picture {
 	border-color: #D3D4D5;
 	overflow: hidden;
 }
-.post-form #emoji-button {
+.post-form #emoji-button, #tag-button {
 	position: relative;
 	display: inline-block;
-	color: #e74c3c;
+	color: white;
 	font-size: 20px;
 	cursor: pointer;
 	background-color: #0D131B;
@@ -244,7 +266,9 @@ header .profile-picture {
 #input-container {
 	display: flex;
 	flex-direction: column;
+	gap: 10px;
 	width: 100%;
+	height: 100%;
 }
 
 .post-form input[name="title"], .post-form textarea[name="content"] {
@@ -261,7 +285,7 @@ header .profile-picture {
 }
 
 .post-form textarea[name="content"] {
-	margin-top: 10px;
+	height: 100%;
 	min-height: 100px;
 	text-overflow: clip;
 	font-size: 15px;
@@ -270,7 +294,31 @@ header .profile-picture {
 	grid-column: 1 / -1;
 	
 }
-
+#fileLabel {
+	cursor: pointer;
+	background-color: #0D131B;
+	border-radius: 8px;
+	color: white;
+}
+#tag-grid {
+	padding-inline: 30px;
+	padding-bottom: 30px;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+.tag {
+	background: linear-gradient(to right, #FF6347, #ba3b25);
+	width: fit-content;
+	border-radius: 10px;
+	padding: 5px;
+	font-size: 12px;
+}
+#chosenTag {
+	width: fit-content;
+	margin: 0;
+}
 /* ================================ EMOJI STUFF ================================ */
 #emoji-container {
 	padding: 20px;
@@ -326,6 +374,9 @@ input[type="text"] {
 	border-radius: 4px;
 	font-size: 16px;
 	font-family: 'MotivaSansThin', Arial, Helvetica, sans-serif;
+}
+input[type="file"] {
+	width: 50px;
 }
 button[type="submit"] {
 	width: 100%;

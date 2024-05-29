@@ -22,6 +22,7 @@ async function initializeDB() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             content TEXT NOT NULL,
+            tag TEXT,
             image_url TEXT,
             username TEXT NOT NULL,
             timestamp DATETIME NOT NULL,
@@ -45,8 +46,8 @@ async function initializeDB() {
     ];
 
     const posts = [
-        { title: 'First Post', content: 'This is the first post', image_url:'', username: 'user1', timestamp: '2024-01-01 12:30:00', likes: 0 },
-        { title: 'Second Post', content: 'This is the second post', image_url: '', username: 'user2', timestamp: '2024-01-02 12:30:00', likes: 0 }
+        { title: 'First Post', content: 'This is the first post',tag: '', image_url:'', username: 'user1', timestamp: '2024-01-01 12:30:00', likes: 0 },
+        { title: 'Second Post', content: 'This is the second post', tag: '', image_url: '', username: 'user2', timestamp: '2024-01-02 12:30:00', likes: 0 }
     ];
 
     // Insert sample data into the database
@@ -59,8 +60,8 @@ async function initializeDB() {
 
     await Promise.all(posts.map(post => {
         return db.run(
-            'INSERT INTO posts (title, content, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?)',
-            [post.title, post.content, post.image_url, post.username, post.timestamp, post.likes]
+            'INSERT INTO posts (title, content,tag, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [post.title, post.content, post.tag, post.image_url, post.username, post.timestamp, post.likes]
         );
     }));
 
