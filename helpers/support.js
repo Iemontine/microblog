@@ -5,6 +5,7 @@ const dotenv = require('dotenv').config();
 const fs = require('fs');
 const sqlite = require('sqlite');
 const sqlite3 = require('sqlite3');
+const crypto = require('crypto');
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Support Functions
@@ -80,17 +81,17 @@ function isAuthenticated(req, res, next) {
 // Function to register a user
 async function registerUser(req, res, userinfo) {
 	// Set username to either the user's input name or their Google name
-	let userName = req.session.registeringUser || userinfo.data.name;
+	let username = req.session.registeringUser || userinfo.data.name;
 
-	let existingUser = await findUserByUsername(userName);
-	if (userName === '') {
+	let existingUser = await findUserByUsername(username);
+	if (username === '') {
 		res.redirect('/register?error=Input%20required');
 		return false;
 	} else if (existingUser) {
 		res.redirect('/register?error=User%20already%20exists');
 		return false;
 	} else {
-		let userId = await addUser(userName, userinfo.data.email);
+		let userId = await addUser(username, userinfo);
 		// req.session.user = user;
 		req.session.userId = userId;
 		req.session.loggedIn = true;
@@ -107,12 +108,12 @@ async function registerUser(req, res, userinfo) {
 }
 
 // Function to add a new user
-async function addUser(username, email) {
+async function addUser(username, userinfo) {
 	// TODO: Create a new user object and add to users array
 	let timeStamp = getNewTimeStamp();
 	let user = {
 		username: username,
-		hashedGoogleId: "BLAH",
+		hashedGoogleId: crypto.SHA256(id.toString()).toString(),
 		email: email,
 		avatar_url: undefined,
 		memberSince: timeStamp,
@@ -138,8 +139,7 @@ async function addUser(username, email) {
 
 // Function to login a user
 async function loginUser(req, res, userinfo) {
-	let user = findUserByEmail(userinfo.data.email);
-	console.log(user);
+	let user = await findUserById(userinfo.data.id);
 	if (user) {
 		// req.session.user = user;
 		if (!user.avatar_url) {
