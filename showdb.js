@@ -5,7 +5,7 @@ const sqlite3 = require('sqlite3');
 const dotenv = require('dotenv').config();
 
 // Placeholder for the database file name
-const dbFileName = process.env.DATABASE_PATH;
+const dbFileName = 'your_database_file.db';
 
 async function showDatabaseContents() {
     const db = await sqlite.open({ filename: dbFileName, driver: sqlite3.Database });

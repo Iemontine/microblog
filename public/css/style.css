@@ -397,7 +397,7 @@ button[type="submit"]:hover {
 	font-size: 16px;
 	color: #FF6347;
 }
-.login-area p {
+.login-area p, .register-area p{
 	margin-left: 8px;
 }
 
