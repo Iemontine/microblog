@@ -208,7 +208,6 @@ header .profile-picture {
 	margin: 20px;
 }
 #profile-container {
-	margin-top: 20px;
 	margin-inline: auto;
 	display:flex;
 	flex-direction: column;
@@ -221,7 +220,7 @@ header .profile-picture {
 
 
 #profile-screen {
-	padding-inline: 20px;
+	padding: 20px;
 }
 #profile-container .profile-picture {
 	border-radius: 10%;
@@ -250,7 +249,7 @@ header .profile-picture {
 	border-color: #D3D4D5;
 	overflow: hidden;
 }
-.post-form #emoji-button, #tag-button {
+.post-form #emoji-button, #tag-button, #fileLabel {
 	position: relative;
 	display: inline-block;
 	color: white;

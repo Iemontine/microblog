@@ -66,7 +66,7 @@ router.post('/posts', upload.single('file'), async (req, res) => {
 		let title = req.body.title;
 		let content = req.body.content;
 		let file = req.file ? req.file.filename : '';	// If no file given, set to empty string
-		console.log(req.file);
+		let tag = req.body.tag;
 		let user = await helper.findUserById(req.session.userId); 	// suspicious, may need to use googleid?
 		if (content === '' && title === '') {
 			res.redirect(`/home?error=Title%20and%20Content%20required`);
@@ -78,11 +78,11 @@ router.post('/posts', upload.single('file'), async (req, res) => {
 			res.redirect(`/home?error=Title%20required&content=${content}`);
 		}
 		else if (file === '') {
-			helper.addPost(title, content, user);
+			helper.addPost(title, content, user, tag);
 			res.redirect('/');
 		}
 		else {
-			helper.addPost(title, content, user, file);
+			helper.addPost(title, content, user, tag, file);
 			res.redirect('/');
 		}
 	} catch (error) {
