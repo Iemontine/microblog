@@ -28,6 +28,7 @@ async function initializeDB() {
 			likes INTEGER NOT NULL
 		);
 
+
 		CREATE TABLE IF NOT EXISTS likes (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			user_id INTEGER NOT NULL,
@@ -49,6 +50,7 @@ async function initializeDB() {
 		{ title: 'Why do APIs always carry umbrellas?', content: 'Because they can’t handle a downpour of requests!', image_url: '', username: 'CourseAssist.ai', timestamp: '2024-01-02 12:30:00', likes: 0 }
 	];
 
+
 	// Insert sample data into the database
 	await Promise.all(users.map(user => {
 		return db.run(
@@ -63,6 +65,7 @@ async function initializeDB() {
 			[post.title, post.content, post.image_url, post.username, post.timestamp, post.likes]
 		);
 	}));
+
 
 	console.log('Database populated with initial data.');
 	await db.close();

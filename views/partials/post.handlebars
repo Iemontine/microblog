@@ -1,25 +1,41 @@
 {{! Partial for a single post }}
 <div class="post">
 	<div class="post-content preserve-newlines">
-		<h1>{{this.title}}</h1>
-		<p>{{this.content}}</p>
-		<img src={{this.image_url}} alt="post image">
+		<div class="post-header">
+			<img src="/images/{{this.username}}.png" alt="{{this.username}}" class="profile-picture">
+
+			<h1>{{this.title}}</h1>
+			{{#if this.tag}}
+			<p class="tag">{{this.tag}}</p>
+			{{/if}}
+		</div>
+		{{!-- <div class="post-body"> --}}
+			{{#if this.content}}
+				<p>{{this.content}}</p>
+			{{/if}}
+			{{#ifCond this.image_url ''}}
+			{{else}}
+				<img class="post-image" src={{this.image_url}} alt="post image">
+			{{/ifCond}}
+		{{!-- </div> --}}
 	</div>
-	<div class="post-avatar" onload="getAvatar(event)">
-		<img src="/images/{{this.username}}.png" alt="{{this.username}}" class="profile-picture">
+	<div class="post-footer">
+		<div class="post-avatar">
 		{{!-- TODO: proper styling for stacking the username and timestamp on top of eachother using flex --}}
 		<span>Posted by {{this.username}} on {{this.timestamp}}</span>
 		{{!-- <span>on {{this.timestamp}}</span> --}}
-	</div>
-	<div class="post-status-bar">
-		<span class="likes">{{this.likes}} likes</span>
-		{{#ifCond this.username user.username}}
-			<button class="deleteButton" data-id="{{this.id}}" onclick="handleDeleteClick(event)"><i class="fas fa-trash-alt"></i></button>
-		{{else}}
-			<button class="likeButton" data-id="{{this.id}}" onclick="handleLikeClick(event)">♥</button>
-		{{/ifCond}}
+		</div>
+		<div class="post-status-bar">
+			<span class="likes">{{this.likes}} likes</span>
+			{{#ifCond this.username user.username}}
+				<button class="deleteButton" data-id="{{this.id}}" onclick="handleDeleteClick(event)"><i class="fas fa-trash-alt"></i></button>
+			{{else}}
+				<button class="likeButton" data-id="{{this.id}}" onclick="handleLikeClick(event)">♥</button>
+			{{/ifCond}}
+		</div>
 	</div>
 </div>
+	
 <script>
 	function handleLikeClick(event) {
 		const postId = event.target.getAttribute('data-id');
