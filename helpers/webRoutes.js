@@ -6,7 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-		cb(null, '/public/uploads/'); // Destination folder for uploaded files
+		cb(null, './public/uploads/'); // Destination folder for uploaded files
 	},
 	filename: function (req, file, cb) {
 		cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
@@ -66,6 +66,7 @@ router.post('/posts', upload.single('file'), async (req, res) => {
 		let title = req.body.title;
 		let content = req.body.content;
 		let file = req.file ? req.file.filename : '';	// If no file given, set to empty string
+		console.log(req.file);
 		let user = await helper.findUserById(req.session.userId); 	// suspicious, may need to use googleid?
 		if (content === '' && title === '') {
 			res.redirect(`/home?error=Title%20and%20Content%20required`);
