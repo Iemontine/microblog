@@ -160,7 +160,6 @@ async function loginUser(req, res, userinfo) {
 		})
 		return true;
 	} else {
-		res.redirect('/login?error=User%20not%20found');
 		return false;
 	}
 }

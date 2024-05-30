@@ -33,11 +33,6 @@ router.get('/', async (req, res) => {
 	res.render('home', { posts, user, sortBy, order, tag, tags });
 });
 
-// Register GET route is used for error response from registration
-router.get('/register', (req, res) => {
-	res.render('loginRegister', { regError: req.query.error });
-});
-
 // Register Username route where the user can enter a desired username.
 router.get('/registerUsername', (req, res) => {
 	res.render('registerUsername', { usernameError: req.query.error });
@@ -77,13 +72,7 @@ router.post('/posts', upload.single('file'), async (req, res) => {
 		let file = req.file ? req.file.filename : '';	// If no file given, set to empty string
 		let tag = req.body.tag;
 		let user = await helper.findUserById(req.session.userId); 	// suspicious, may need to use googleid?
-		if (content === '' && title === '') {
-			res.redirect(`/home?error=Title%20and%20Content%20required`);
-		}
-		else if (content === '') {
-			res.redirect(`/home?error=Content%20required&title=${title}`);
-		}
-		else if (title === '') {
+		if (title === '') {
 			res.redirect(`/home?error=Title%20required&content=${content}`);
 		}
 		else if (file === '') {
@@ -106,16 +95,6 @@ router.post('/like/:id', async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		res.send(500);
-	}
-});
-
-// Register route: register a new user
-router.post('/register', (req, res) => {
-	try {
-		req.session.registering = true;
-		res.redirect('/auth/google');
-	} catch (error) {
-		console.error(error);
 	}
 });
 
