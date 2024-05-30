@@ -62,6 +62,7 @@ router.get('/auth/google/callback', async (req, res) => {
 		}
 	} catch (error) {
 		console.error(error);
+		res.redirect('/login?error=Login%20failed')
 	}
 });
 
