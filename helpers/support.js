@@ -32,15 +32,6 @@ async function findUserByUsername(username) {
 	return null;
 }
 
-// // Function to find a post by email
-// function findUserByEmail(email) {
-// 	let user = users.find(user => user.email === email);
-// 	if (user) {
-// 		return user;
-// 	}
-// 	return undefined;
-// }
-
 // Function to find a user by user ID
 async function findUserById(userId) {
 	let user = await db.get('SELECT * FROM users WHERE id = ?', [userId]);
@@ -65,7 +56,7 @@ async function findPostById(postId) {
 	if (post) {
 		return post;
 	}
-	return undefined;
+	return null;
 }
 
 // Function to get the current user from session
@@ -92,7 +83,7 @@ async function registerUser(req, res, userinfo) {
 	// Set username to either the user's input name or their Google name
 	let username = req.session.registeringUser || userinfo.data.name;
 
-	let existingUser = await findUserByUsername(username);
+	let existingUser = await findUserByGoogleId(crypto.createHash('sha256', userinfo.data.id).toString());
 	if (username === '') {
 		res.redirect('/register?error=Input%20required');
 		return false;
@@ -197,23 +188,31 @@ async function updatePostLikes(req, res) {
 	try {
 		const postId = parseInt(req.params.id);
 		let post = await findPostById(postId);
+		if (!post) {
+			return res.status(404).json({ error: 'Post not found' });
+		}
+
 		let currentUserId = req.session.userId;
-		if (!currentUserId) throw new Error('User not logged in');
+		if (!currentUserId) {
+			return res.status(401).json({ error: 'User not logged in' });
+		}
 
 		let like = await db.get('SELECT * FROM likes WHERE user_id = ? AND post_id = ?', [currentUserId, postId]);
-		console.log(like)
-		console.log(post)
+		
 		if (like) {
-			await db.run('DELETE FROM likes WHERE user_id = ? AND post_id = ?',
-				[currentUserId, postId]);
+			await db.run('DELETE FROM likes WHERE user_id = ? AND post_id = ?', [currentUserId, postId]);
 			await db.run('UPDATE posts SET likes = ? WHERE id = ?', [post.likes - 1, postId]);
 		} else {
-			await db.run('INSERT INTO likes (user_id, post_id, timestamp) VALUES (?, ?, ?)',
-				[currentUserId, postId, getNewTimeStamp()]);
+			await db.run('INSERT INTO likes (user_id, post_id, timestamp) VALUES (?, ?, ?)', [currentUserId, postId, getNewTimeStamp()]);
 			await db.run('UPDATE posts SET likes = ? WHERE id = ?', [post.likes + 1, postId]);
 		}
+
+		post = await findPostById(postId); // Re-fetch the post to get the updated likes count
+		return res.json(post); // Send the updated post back as response
+
 	} catch (error) {
 		console.error(error);
+		return res.status(500).send('Internal Server Error');
 	}
 }
 
@@ -234,7 +233,7 @@ async function handleAvatar(req, res) {
 	const user = findUserByUsername(username);
 	req.session.registeringUser = undefined; // Clear the registering user, now unnecessary
 	if (!user.avatar_url) {
-		const url = '/images/' + username + '.png';
+		const url = './public/images/' + username + '.png';
 		await db.run('UPDATE users SET avatar_url = ? WHERE username = ?', [url, username]);
 		await generateAvatar(username, url);
 	}
@@ -264,10 +263,9 @@ async function generateAvatar(username, url, width = 100, height = 100) {
 	// Save the image
 	if (stream) {
 		stream.pipe(out);
+		url = url.replace('./public', '');
 		await db.run('UPDATE users SET avatar_url = ? WHERE username = ?', [url, username]);
-		return url.replace('./public', '');
 	}
-	return undefined;
 }
 
 // Function to get all posts, sorted by latest first
