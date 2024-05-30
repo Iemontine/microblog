@@ -3,14 +3,16 @@
 const express = require('express');
 const helper = require('./support');
 const multer = require('multer');
+const path = require('path');
 const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
-		cb(null, './public/uploads/')
+	destination: function (req, file, cb) {
+		cb(null, 'public/uploads/'); // Destination folder for uploaded files
 	},
-	filename: (req, file, cb) => {
-		cb(null, Date.now() + path.extname(file.originalname))
+	filename: function (req, file, cb) {
+		cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
 	}
 });
+// TODO: Allow videos to be uploaded somehow
 const upload = multer({ storage: storage });
 
 const router = express.Router();
@@ -50,7 +52,7 @@ router.get('/error', (req, res) => {
 
 // Profile route: render user profile
 router.get('/profile', helper.isAuthenticated, (req, res) => {
-	renderProfile(req, res);
+	helper.renderProfile(req, res);
 });
 
 // Avatar route: serve user avatar
@@ -90,7 +92,7 @@ router.post('/posts', upload.single('file'), async (req, res) => {
 // Like route: update post likes
 router.post('/like/:id', (req, res) => {
 	try {
-		updatePostLikes(req, res);
+		helper.updatePostLikes(req, res);
 		res.sendStatus(200);
 	} catch (error) {
 		console.error(error);
@@ -127,7 +129,7 @@ router.get('/logout', (req, res) => {
 // Delete route: delete a post
 router.post('/delete/:id', helper.isAuthenticated, (req, res) => {
 	try {
-		deletePost(req, res);
+		helper.deletePost(req, res);
 	} catch (error) {
 		console.log(error);
 	}

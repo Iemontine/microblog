@@ -49,10 +49,6 @@ async function initializeDB() {
 		{ title: 'Why do APIs always carry umbrellas?', content: 'Because they can’t handle a downpour of requests!', image_url: '', username: 'CourseAssist.ai', timestamp: '2024-01-02 12:30:00', likes: 0 }
 	];
 
-	// addPost('', '', findUserById(1))
-	// addPost('', '', findUserById(2))
-
-
 	// Insert sample data into the database
 	await Promise.all(users.map(user => {
 		return db.run(

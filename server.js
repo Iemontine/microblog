@@ -8,6 +8,8 @@ const webRoutes = require('./helpers/webRoutes');
 const apiRoutes = require('./helpers/apiRoutes');
 const fs = require('fs');
 
+// TODO: fix styling
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup, Server Activation
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -17,7 +19,7 @@ const PORT = 3000;
 
 // TODO: new lines don't look so good rn, need to somehow replace with <br>
 
-// Set up Handlebars view engine with Handlebar helpers, custom functions that can be used within the templates to perform specific tasks.
+// Set up Handlebars view engine with Handlebar helpers, custom functions that can be used wit6hin the templates to perform specific tasks.
 // They enhance the functionality of templates and help simplify data manipulation directly within the view files.
 app.engine('handlebars', expressHandlebars.engine({
 		helpers: {

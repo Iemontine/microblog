@@ -152,7 +152,7 @@ async function loginUser(req, res, userinfo) {
 	if (user) {
 		// req.session.user = user;
 		if (!user.avatar_url) {
-			const url = './public/images/' + username + '.png';
+			const url = '/images/' + username + '.png';
 			await generateAvatar(username, url);
 		}	
 		req.session.userId = user.id;
@@ -191,21 +191,26 @@ async function getUserPosts(user) {
 	return posts;
 }
 
+// TODO: Fix this function. Something is happening with posts ids incrementing, and the wrong post being targeted for like/disliking.
 // Function to update post likes
 async function updatePostLikes(req, res) {
 	try {
 		const postId = parseInt(req.params.id);
 		let post = await findPostById(postId);
 		let currentUserId = req.session.userId;
+		if (!currentUserId) throw new Error('User not logged in');
+
 		let like = await db.get('SELECT * FROM likes WHERE user_id = ? AND post_id = ?', [currentUserId, postId]);
+		console.log(like)
+		console.log(post)
 		if (like) {
-			await db.run('DELETE FROM likes WHERE user_id = ? AND post_id = ?', 
-			[currentUserId, postId]);
-			await db.run('UPDATE posts SET likes = ? WHERE id = ?',[post.likes - 1, postId]);
+			await db.run('DELETE FROM likes WHERE user_id = ? AND post_id = ?',
+				[currentUserId, postId]);
+			await db.run('UPDATE posts SET likes = ? WHERE id = ?', [post.likes - 1, postId]);
 		} else {
-			await db.run('INSERT INTO likes (user_id, post_id, timestamp) VALUES (?, ?, ?)', 
-			[currentUserId, postId, getNewTimeStamp()]);
-			await db.run('UPDATE posts SET likes = ? WHERE id = ?',[post.likes + 1, postId]);
+			await db.run('INSERT INTO likes (user_id, post_id, timestamp) VALUES (?, ?, ?)',
+				[currentUserId, postId, getNewTimeStamp()]);
+			await db.run('UPDATE posts SET likes = ? WHERE id = ?', [post.likes + 1, postId]);
 		}
 	} catch (error) {
 		console.error(error);
@@ -229,7 +234,7 @@ async function handleAvatar(req, res) {
 	const user = findUserByUsername(username);
 	req.session.registeringUser = undefined; // Clear the registering user, now unnecessary
 	if (!user.avatar_url) {
-		const url = './public/images/' + username + '.png';
+		const url = '/images/' + username + '.png';
 		await db.run('UPDATE users SET avatar_url = ? WHERE username = ?', [url, username]);
 		await generateAvatar(username, url);
 	}
@@ -272,8 +277,13 @@ async function getPosts() {
 }
 
 // Function to add a new post
-async function addPost(title, content, user, image='') {
-	await db.run('INSERT INTO posts (title, content, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?)', [title, content, '/uploads/' + image, user.username, getNewTimeStamp(), 0])
+async function addPost(title, content, user, image = '') {
+	if (image === '') {
+		await db.run('INSERT INTO posts (title, content, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?)', [title, content, '', user.username, getNewTimeStamp(), 0]);
+	}
+	else {
+		await db.run('INSERT INTO posts (title, content, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?)', [title, content, '/uploads/' + image, user.username, getNewTimeStamp(), 0])
+	}
 }
 
 // Creates new time in the format provided
