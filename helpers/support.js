@@ -110,7 +110,6 @@ async function registerUser(req, res, userinfo) {
 
 // Function to add a new user
 async function addUser(username, userinfo) {
-	// TODO: Create a new user object and add to users array
 	let timeStamp = getNewTimeStamp();
 	let user = {
 		username: username,
@@ -183,7 +182,6 @@ async function getUserPosts(user) {
 	return posts;
 }
 
-// TODO: Fix this function. Something is happening with posts ids incrementing, and the wrong post being targeted for like/disliking.
 // Function to update post likes
 async function updatePostLikes(req, res) {
 	try {
