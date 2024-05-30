@@ -7,6 +7,9 @@ npm install express-session
 npm install canvas
 npm install dotenv
 npm install googleapis
+npm install sqlite
+npm install sqlite3
+npm install multer
 ```
 
 Start server:
