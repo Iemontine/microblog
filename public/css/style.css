@@ -98,7 +98,7 @@ header .profile-picture {
 .post-body {
 	display: flex;
 	flex-direction: col;
-	
+
 }
 .post-footer {
 	display: flex;
@@ -174,7 +174,7 @@ header .profile-picture {
 }
 .noPosts {
 	color: #D3D4D5;
- 
+
 }
 /* ================================ USER-POSTS ================================ */
 .user-posts h2 {
@@ -218,7 +218,6 @@ header .profile-picture {
 	color: #C5C3C0;
 }
 
-
 #profile-screen {
 	padding: 20px;
 }
@@ -249,14 +248,19 @@ header .profile-picture {
 	border-color: #D3D4D5;
 	overflow: hidden;
 }
-.post-form #emoji-button, #tag-button, #fileLabel {
+.post-form #emoji-button, #tag-button, .fileLabel {
 	position: relative;
 	display: inline-block;
-	color: white;
+	color: #bebebe;
 	font-size: 20px;
 	cursor: pointer;
 	background-color: #0D131B;
 	border-radius: 8px;
+	font-size: 18px;
+	font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
+}
+.post-form #emoji-button {
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 /* ================================ USER FORM ================================ */
@@ -291,13 +295,7 @@ header .profile-picture {
 }
 .post-form #form-actions {
 	grid-column: 1 / -1;
-	
-}
-#fileLabel {
-	cursor: pointer;
-	background-color: #0D131B;
-	border-radius: 8px;
-	color: white;
+
 }
 #tag-grid {
 	padding-inline: 30px;
@@ -318,6 +316,48 @@ header .profile-picture {
 	width: fit-content;
 	margin: 0;
 }
+
+/* ================================ FILTERING ================================ */
+
+#sortFilterForm {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	max-width: 500px;
+	align-items: center;
+	margin-bottom: 20px;
+	padding: 10px;
+	border-radius: 5px;
+}
+#sortFilterForm div {
+	display: flex;
+	align-items: center;
+	margin: 0 10px;
+}
+#sortFilterForm label {
+	margin-bottom: 5px;
+	color: #ECF0F1;
+}
+#sortFilterForm select {
+	padding: 5px;
+	background-color: #34495E;
+	color: #ECF0F1;
+	border: none;
+	border-radius: 5px;
+	transition: background-color 0.3s ease, transform 0.3s ease;
+	width: 150px;
+}
+#sortFilterForm select:hover {
+	background-color: #1ABC9C;
+}
+#sortFilterForm select:focus {
+	outline: none;
+	background-color: #16A085;
+}
+#sortFilterForm > div > select {
+	font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
+}
+
 /* ================================ EMOJI STUFF ================================ */
 #emoji-container {
 	padding: 20px;
@@ -415,5 +455,9 @@ button[type="submit"]:hover {
 	}
 	#profile-container {
 		flex-direction: column;
+	}
+	#sortFilterForm {
+		flex-direction: column;
+		max-width: 150px;
 	}
 }

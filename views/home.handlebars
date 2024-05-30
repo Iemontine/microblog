@@ -15,7 +15,9 @@
 						{{/if}} class="profile-picture">
 					<button type="button" id="emoji-button" onclick="toggleEmojiPanel()">😀</button>
 					<button type="button" id="tag-button", onclick="toggleTagPanel()">Tag</button>
-					<button type="button" id="fileLabel"><label id="fileLabel" for="image">File</label></button>
+					<button type="button" class="fileLabel">
+						<label class="fileLabel" for="image">File</label>
+					</button>
 					<input type="file" id="image" name="file" hidden>
 				</div>
 				<div id="input-container">
@@ -24,7 +26,7 @@
 					{{/if}}
 					<input type="text" name="title" placeholder="Title" required>
 					<p id="chosenTag" class="tag" style="display: none;"></p>
-					<textarea type="text" name="content" placeholder="Content (optional)">{{content}}</textarea>
+					<textarea type="text" name="content" placeholder="Content" required>{{content}}</textarea>
 					<input type="hidden" name="tag">
 				</div>
 				<div id="form-actions">
@@ -44,6 +46,32 @@
 		</section>
 	{{/if}}
 
+	<!-- Sorting and Filtering Controls -->
+	<form id="sortFilterForm">
+		<div>
+			<select id="sortBy" name="sortBy">
+				<option value="timestamp" {{#ifCond sortBy 'timestamp'}}selected{{/ifCond}}>Recency</option>
+				<option value="likes" {{#ifCond sortBy 'likes'}}selected{{/ifCond}}>Likes</option>
+			</select>
+		</div>
+
+		<div>
+			<select id="order" name="order">
+				<option value="DESC" {{#ifCond order 'DESC'}}selected{{/ifCond}}>Descending</option>
+				<option value="ASC" {{#ifCond order 'ASC'}}selected{{/ifCond}}>Ascending</option>
+			</select>
+		</div>
+
+		<div>
+			<select id="tag" name="tag">
+				<option value="" {{#ifCond tag ''}}selected{{/ifCond}}>All</option>
+				{{#each tags}}
+				<option value="{{this}}" {{#ifCond ../tag this}}selected{{/ifCond}}>{{this}}</option>
+				{{/each}}
+			</select>
+		</div>
+	</form>
+
 	<section class="posts-list">
 		<!-- recent posts -->
 		{{#if posts.length}}
@@ -54,13 +82,23 @@
 				{{/each}}
 			</ul>
 		{{else}}
-			<p>No one has posted yet!</p>
+			<p>No funny found!</p>
 		{{/if}}
 	</section>
 </section>
 
 {{! JavaScript for Emoji Integration }}
 <script>
+	// Automatically apply dropdown options whenever updated
+	document.addEventListener('DOMContentLoaded', function () {
+		const form = document.getElementById('sortFilterForm');
+		// Add event listeners to all dropdowns
+		form.querySelectorAll('select').forEach(function (dropdown) {
+			dropdown.addEventListener('change', function () {
+				form.submit(); // Submit the form on dropdown change
+			});
+		});
+	});
 
 	function toggleTagPanel() {
 		const container = document.getElementById('tag-container');

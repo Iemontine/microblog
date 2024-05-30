@@ -24,9 +24,13 @@ const router = express.Router();
 // Home route: render home view with posts and user
 router.get('/', async (req, res) => {
 	// Pass the posts and user variables into the home template
-	const posts = await helper.getPosts();
+	const sortBy = req.query.sortBy || 'timestamp';
+	const order = req.query.order || 'DESC';
+	const tag = req.query.tag || '';
+	const posts = await helper.getPosts(sortBy, order, tag);
 	const user = await helper.getCurrentUser(req) || {};
-	res.render('home', { posts, user });
+	let tags = ['Dad Joke', 'Dark Humor', 'Ironic', 'One-liner', 'Self-deprecating', 'Computer Science', 'Meta Humor'];
+	res.render('home', { posts, user, sortBy, order, tag, tags });
 });
 
 // Register GET route is used for error response from registration

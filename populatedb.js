@@ -47,8 +47,8 @@ async function initializeDB() {
 	];
 
 	const posts = [
-		{ title: 'Why did the scarecrow get a promotion?', content: 'Because it was outstanding in its field!!!!', tag: '', image_url: '', username: 'Ellen958', timestamp: '2024-01-01 12:30:00', likes: 0 },
-		{ title: 'Why do APIs always carry umbrellas?', content: 'Because they can’t handle a downpour of requests!', tag: '', image_url: '', username: 'CourseAssist.ai', timestamp: '2024-01-02 12:30:00', likes: 0 }
+		{ title: 'Why did the scarecrow get a promotion?', content: 'Because it was outstanding in its field!!!!', tag: 'Ironic', image_url: '', username: 'Ellen958', timestamp: '2024-01-01 12:30:00', likes: 0 },
+		{ title: 'Why do APIs always carry umbrellas?', content: 'Because they can’t handle a downpour of requests!', tag: 'Computer Science', image_url: '', username: 'CourseAssist.ai', timestamp: '2024-01-02 12:30:00', likes: 0 }
 	];
 
 

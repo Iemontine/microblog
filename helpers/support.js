@@ -262,8 +262,19 @@ async function generateAvatar(username, url, width = 100, height = 100) {
 }
 
 // Function to get all posts, sorted by latest first
-async function getPosts() {
-	let posts = await db.all('SELECT * FROM posts');
+async function getPosts(sortBy = "timestamp", order = "DESC", tag = '') {
+	let query = 'SELECT * FROM posts';
+	const params = [];
+	
+	// Sort by multiple tags?
+	if (tag !== '') {
+		query += ' WHERE tag = ?';
+		params.push(tag);
+	}
+
+	// Perform the sorted query
+	query += ' ORDER BY ' + sortBy + ' ' + order;
+	let posts = await db.all(query, params);
 	return posts;
 }
 
