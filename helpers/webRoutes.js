@@ -93,7 +93,6 @@ router.post('/posts', upload.single('file'), async (req, res) => {
 router.post('/like/:id', async (req, res) => {
 	try {
 		await helper.updatePostLikes(req, res);
-		res.sendStatus(200);
 	} catch (error) {
 		console.error(error);
 		res.send(500);

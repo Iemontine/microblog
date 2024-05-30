@@ -188,17 +188,10 @@ async function updatePostLikes(req, res) {
 	try {
 		const postId = parseInt(req.params.id);
 		let post = await findPostById(postId);
-		if (!post) {
-			return res.status(404).json({ error: 'Post not found' });
-		}
-
+		if (!post) return res.status(404).json({ error: 'Post not found' });
 		let currentUserId = req.session.userId;
-		if (!currentUserId) {
-			return res.status(401).json({ error: 'User not logged in' });
-		}
-
+		if (!currentUserId) return res.status(401).json({ error: 'User not logged in' });
 		let like = await db.get('SELECT * FROM likes WHERE user_id = ? AND post_id = ?', [currentUserId, postId]);
-		
 		if (like) {
 			await db.run('DELETE FROM likes WHERE user_id = ? AND post_id = ?', [currentUserId, postId]);
 			await db.run('UPDATE posts SET likes = ? WHERE id = ?', [post.likes - 1, postId]);
@@ -206,13 +199,11 @@ async function updatePostLikes(req, res) {
 			await db.run('INSERT INTO likes (user_id, post_id, timestamp) VALUES (?, ?, ?)', [currentUserId, postId, getNewTimeStamp()]);
 			await db.run('UPDATE posts SET likes = ? WHERE id = ?', [post.likes + 1, postId]);
 		}
-
-		post = await findPostById(postId); // Re-fetch the post to get the updated likes count
-		return res.json(post); // Send the updated post back as response
-
+		post = await findPostById(postId);
+		return res.json(post);
 	} catch (error) {
 		console.error(error);
-		return res.status(500).send('Internal Server Error');
+		return res.status(500).send('Error');
 	}
 }
 
