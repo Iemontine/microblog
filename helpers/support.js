@@ -266,12 +266,12 @@ async function getPosts() {
 }
 
 // Function to add a new post
-async function addPost(title, content, user, image = '') {
+async function addPost(title, content, user, tag, image = '') {
 	if (image === '') {
-		await db.run('INSERT INTO posts (title, content, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?)', [title, content, '', user.username, getNewTimeStamp(), 0]);
+		await db.run('INSERT INTO posts (title, content, tag, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?, ?)', [title, content, tag, '', user.username, getNewTimeStamp(), 0]);
 	}
 	else {
-		await db.run('INSERT INTO posts (title, content, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?)', [title, content, '/uploads/' + image, user.username, getNewTimeStamp(), 0])
+		await db.run('INSERT INTO posts (title, content, tag, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?, ?)', [title, content, tag, '/uploads/' + image, user.username, getNewTimeStamp(), 0])
 	}
 }
 

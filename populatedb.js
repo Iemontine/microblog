@@ -22,6 +22,7 @@ async function initializeDB() {
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			title TEXT NOT NULL,
 			content TEXT NOT NULL,
+			tag TEXT,
 			image_url TEXT,
 			username TEXT NOT NULL,
 			timestamp DATETIME NOT NULL,
@@ -46,8 +47,8 @@ async function initializeDB() {
 	];
 
 	const posts = [
-		{ title: 'Why did the scarecrow get a promotion?', content: 'Because it was outstanding in its field!!!!', image_url: '', username: 'Ellen958', timestamp: '2024-01-01 12:30:00', likes: 0 },
-		{ title: 'Why do APIs always carry umbrellas?', content: 'Because they can’t handle a downpour of requests!', image_url: '', username: 'CourseAssist.ai', timestamp: '2024-01-02 12:30:00', likes: 0 }
+		{ title: 'Why did the scarecrow get a promotion?', content: 'Because it was outstanding in its field!!!!', tag: '', image_url: '', username: 'Ellen958', timestamp: '2024-01-01 12:30:00', likes: 0 },
+		{ title: 'Why do APIs always carry umbrellas?', content: 'Because they can’t handle a downpour of requests!', tag: '', image_url: '', username: 'CourseAssist.ai', timestamp: '2024-01-02 12:30:00', likes: 0 }
 	];
 
 
@@ -61,8 +62,8 @@ async function initializeDB() {
 
 	await Promise.all(posts.map(post => {
 		return db.run(
-			'INSERT INTO posts (title, content, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?)',
-			[post.title, post.content, post.image_url, post.username, post.timestamp, post.likes]
+			'INSERT INTO posts (title, content, tag, image_url, username, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?, ?)',
+			[post.title, post.content, post.tag, post.image_url, post.username, post.timestamp, post.likes]
 		);
 	}));
 
