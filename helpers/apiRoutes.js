@@ -4,6 +4,7 @@ const express = require('express');
 const { google } = require('googleapis');
 const fetch = require('node-fetch');
 const helper = require('./support');
+const crypto = require('crypto');
 
 const router = express.Router();
 const { OAuth2Client } = require('google-auth-library');
@@ -46,13 +47,15 @@ router.get('/auth/google/callback', async (req, res) => {
 		// Check if user is registering or logging in
 		if (req.session.registering) {
 			req.session.registering = false;
-			try {
-				// Register user, if successful generate avatar
-				if (helper.registerUser(req, res, userinfo)) {
-					await helper.handleAvatar(req, res);
-				}
-			} catch (error) {
-				console.error(error);
+			req.session.registeringUserinfo = userinfo;
+			const hashedGoogleId = crypto.createHash('sha256').update(userinfo.data.id).digest('hex');
+			let existingUser = await helper.findUserByGoogleId(hashedGoogleId);
+			if (!existingUser) {
+				res.redirect('/registerUsername');
+			} else {
+				req.session.registeringUserinfo = undefined;
+				req.session.registeringUser = undefined;
+				res.redirect('/register?error=User%20already%20exists');
 			}
 		}
 		else if (req.session.loggingIn) {

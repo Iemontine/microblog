@@ -81,20 +81,21 @@ function isAuthenticated(req, res, next) {
 // Function to register a user
 async function registerUser(req, res, userinfo) {
 	// Set username to either the user's input name or their Google name
-	let username = req.session.registeringUser || userinfo.data.name;
-
-	let existingUser = await findUserByGoogleId(crypto.createHash('sha256', userinfo.data.id).toString());
+	let username = req.session.registeringUser;
+	let usernameTaken = await findUserByUsername(username);
 	if (username === '') {
-		res.redirect('/register?error=Input%20required');
+		res.redirect('/registerUsername?error=Input%20required');
 		return false;
-	} else if (existingUser) {
-		res.redirect('/register?error=User%20already%20exists');
+	} else if (usernameTaken) {
+		res.redirect('/registerUsername?error=Username%20taken');
 		return false;
 	} else {
 		let userId = await addUser(username, userinfo);
 		// req.session.user = user;
 		req.session.userId = userId;
 		req.session.loggedIn = true;
+		req.session.registeringUser = undefined;
+		req.session.registeringUserinfo
 		req.session.save((err) => {
 			if (err) {
 				console.error('Error saving session:', err);
@@ -113,7 +114,7 @@ async function addUser(username, userinfo) {
 	let timeStamp = getNewTimeStamp();
 	let user = {
 		username: username,
-		hashedGoogleId: crypto.createHash('sha256', userinfo.data.id).toString(),
+		hashedGoogleId: crypto.createHash('sha256').update(userinfo.data.id).digest('hex'),
 		email: userinfo.data.email,
 		avatar_url: undefined,
 		memberSince: timeStamp,
@@ -139,7 +140,8 @@ async function addUser(username, userinfo) {
 
 // Function to login a user
 async function loginUser(req, res, userinfo) {
-	let user = await findUserByGoogleId(crypto.createHash('sha256', userinfo.data.id).toString());
+	let hashedGoogleId = crypto.createHash('sha256').update(userinfo.data.id).digest('hex')
+	let user = await findUserByGoogleId(hashedGoogleId);
 	if (user) {
 		// req.session.user = user;
 		if (!user.avatar_url) {
@@ -299,6 +301,7 @@ async function createUserAvatars() {
 
 module.exports = {
 	findUserByUsername,
+	findUserByGoogleId,
 	findUserById,
 	findPostById,
 	getCurrentUser,

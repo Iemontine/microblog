@@ -34,6 +34,11 @@ router.get('/register', (req, res) => {
 	res.render('loginRegister', { regError: req.query.error });
 });
 
+// Register Username route where the user can enter a desired username.
+router.get('/registerUsername', (req, res) => {
+	res.render('registerUsername', { usernameError: req.query.error });
+});
+
 // Login route GET route is used for error response from login
 router.get('/login', (req, res) => {
 	res.render('loginRegister', { loginError: req.query.error });
@@ -103,13 +108,31 @@ router.post('/like/:id', async (req, res) => {
 // Register route: register a new user
 router.post('/register', (req, res) => {
 	try {
-		req.session.registeringUser = req.body.username;
 		req.session.registering = true;
 		res.redirect('/auth/google');
 	} catch (error) {
 		console.error(error);
 	}
 });
+
+// Register route: get the registering user's desired username
+router.post('/registerUsername', async (req, res) => {
+	try {
+		req.session.registeringUser = req.body.username;
+		let userinfo = req.session.registeringUserinfo;
+		try {
+			// Register user, if successful generate avatar
+			if (helper.registerUser(req, res, userinfo)) {
+				await helper.handleAvatar(req, res);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 
 // Login route: login a user
 router.post('/login', (req, res) => {
