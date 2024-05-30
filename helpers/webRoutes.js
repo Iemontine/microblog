@@ -59,12 +59,12 @@ router.get('/avatar/:username', (req, res) => {
 });
 
 // Post route: add a new post
-router.post('/posts', upload.single('image'), async (req, res) => {
+router.post('/posts', upload.single('file'), async (req, res) => {
 	try {
 		let title = req.body.title;
 		let content = req.body.content;
-		let image = req.file.filename || '';
-		let user = findUserById(req.session.userId);
+		let file = req.file ? req.file.filename : '';	// If no file given, set to empty string
+		let user = await helper.findUserById(req.session.userId);
 		if (content === '' && title === '') {
 			res.redirect(`/home?error=Title%20and%20Content%20required`);
 		}
@@ -74,8 +74,12 @@ router.post('/posts', upload.single('image'), async (req, res) => {
 		else if (title === '') {
 			res.redirect(`/home?error=Title%20required&content=${content}`);
 		}
+		else if (file === '') {
+			helper.addPost(title, content, user);
+			res.redirect('/');
+		}
 		else {
-			addPost(title, content, user, image);
+			helper.addPost(title, content, user, file);
 			res.redirect('/');
 		}
 	} catch (error) {
@@ -117,7 +121,7 @@ router.post('/login', (req, res) => {
 
 // Logout route: log out a user
 router.get('/logout', (req, res) => {
-	logoutUser(req, res);
+	helper.logoutUser(req, res);
 });
 
 // Delete route: delete a post

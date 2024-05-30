@@ -32,18 +32,27 @@ async function findUserByUsername(username) {
 	return null;
 }
 
-// Function to find a post by email
-function findUserByEmail(email) {
-	let user = users.find(user => user.email === email);
-	if (user) {
-		return user;
-	}
-	return undefined;
-}
+// // Function to find a post by email
+// function findUserByEmail(email) {
+// 	let user = users.find(user => user.email === email);
+// 	if (user) {
+// 		return user;
+// 	}
+// 	return undefined;
+// }
 
 // Function to find a user by user ID
 async function findUserById(userId) {
 	let user = await db.get('SELECT * FROM users WHERE id = ?', [userId]);
+	if (user) {
+		return user;
+	}
+	return null;
+}
+
+// Function to find a user by user ID
+async function findUserByGoogleId(userId) {
+	let user = await db.get('SELECT * FROM users WHERE hashedGoogleId = ?', [userId]);
 	if (user) {
 		return user;
 	}
@@ -113,8 +122,8 @@ async function addUser(username, userinfo) {
 	let timeStamp = getNewTimeStamp();
 	let user = {
 		username: username,
-		hashedGoogleId: crypto.SHA256(id.toString()).toString(),
-		email: email,
+		hashedGoogleId: crypto.createHash('sha256', userinfo.data.id).toString(),
+		email: userinfo.data.email,
 		avatar_url: undefined,
 		memberSince: timeStamp,
 	}
@@ -139,7 +148,7 @@ async function addUser(username, userinfo) {
 
 // Function to login a user
 async function loginUser(req, res, userinfo) {
-	let user = await findUserById(userinfo.data.id);
+	let user = await findUserByGoogleId(crypto.createHash('sha256', userinfo.data.id).toString());
 	if (user) {
 		// req.session.user = user;
 		if (!user.avatar_url) {
@@ -291,7 +300,6 @@ async function createUserAvatars() {
 
 module.exports = {
 	findUserByUsername,
-	findUserByEmail,
 	findUserById,
 	findPostById,
 	getCurrentUser,

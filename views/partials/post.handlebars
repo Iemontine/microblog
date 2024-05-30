@@ -3,7 +3,7 @@
 	<div class="post-content preserve-newlines">
 		<h1>{{this.title}}</h1>
 		<p>{{this.content}}</p>
-		{{#if this.image_url}}
+		{{#if (exists this.image_url)}}
 			<img src={{this.image_url}} alt="post image">
 		{{/if}}
 	</div>

@@ -6,6 +6,7 @@ const session = require('express-session');
 
 const webRoutes = require('./helpers/webRoutes');
 const apiRoutes = require('./helpers/apiRoutes');
+const fs = require('fs');
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup, Server Activation
@@ -21,22 +22,23 @@ const PORT = 3000;
 app.engine('handlebars', expressHandlebars.engine({
 		helpers: {
 			toLowerCase: (str) => str.toLowerCase(),
-			// - Converts a given string to lowercase.
-			// - Usage example: {{toLowerCase 'SAMPLE STRING'}} -> 'sample string'
+			// Converts a given string to lowercase. Usage example: {{toLowerCase 'SAMPLE STRING'}} -> 'sample string'
 			ifCond: function (v1, v2, options) {
 				if (v1 === v2) {
 					return options.fn(this);
 				}
 				return options.inverse(this);
 			},
-			// - Compares two values for equality and returns a block of content based on 
-			//  the comparison result.
-			// - Usage example: 
-			// 	{{#ifCond value1 value2}}
-			// 		<!-- Content if value1 equals value2 -->
-			// 	{{else}}
-			// 		<!-- Content if value1 does not equal value2 -->
-			// 	{{/ifCond}}
+			// Compares two values for equality and returns a block of content based on the comparison result.
+			exists: function (filePath) {
+				try {
+					fs.accessSync(filePath);
+					return true;
+				} catch (error) {
+					return false;
+				}
+			},
+			// Checks if a file exists at the given path.
 		},
 	})
 );
