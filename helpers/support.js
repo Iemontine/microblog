@@ -143,7 +143,7 @@ async function loginUser(req, res, userinfo) {
 	if (user) {
 		// req.session.user = user;
 		if (!user.avatar_url) {
-			const url = '/images/' + username + '.png';
+			const url = '/avatars/' + username + '.png';
 			await generateAvatar(username, url);
 		}	
 		req.session.userId = user.id;
@@ -224,7 +224,7 @@ async function handleAvatar(req, res) {
 	const user = findUserByUsername(username);
 	req.session.registeringUser = undefined; // Clear the registering user, now unnecessary
 	if (!user.avatar_url) {
-		const url = './public/images/' + username + '.png';
+		const url = './public/avatars/' + username + '.png';
 		await db.run('UPDATE users SET avatar_url = ? WHERE username = ?', [url, username]);
 		await generateAvatar(username, url);
 	}
@@ -291,7 +291,7 @@ async function createUserAvatars() {
 	const users = await db.all('SELECT * FROM users');
 	await Promise.all(users.map(async user => {
 		if (!user.avatar_url) {
-			const url = './public/images/' + user.username + '.png';
+			const url = './public/avatars/' + user.username + '.png';
 			await generateAvatar(user.username, url);
 		}
 	}))
