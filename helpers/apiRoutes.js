@@ -44,22 +44,15 @@ router.get('/auth/google/callback', async (req, res) => {
 		});
 		const userinfo = await oauth2.userinfo.get();
 
-		// Check if user is registering or logging in
-		if (req.session.registering) {
-			req.session.registering = false;
-			req.session.registeringUserinfo = userinfo;
-			const hashedGoogleId = crypto.createHash('sha256').update(userinfo.data.id).digest('hex');
-			let existingUser = await helper.findUserByGoogleId(hashedGoogleId);
-			if (!existingUser) {
-				res.redirect('/registerUsername');
-			} else {
-				req.session.registeringUserinfo = undefined;
-				req.session.registeringUser = undefined;
-				res.redirect('/register?error=User%20already%20exists');
-			}
-		}
-		else if (req.session.loggingIn) {
-			req.session.loggingIn = false;
+		req.session.registeringUserinfo = userinfo;
+		const hashedGoogleId = crypto.createHash('sha256').update(userinfo.data.id).digest('hex');
+		let existingUser = await helper.findUserByGoogleId(hashedGoogleId);
+
+		if (!existingUser) {
+			res.redirect('/registerUsername');
+		} else {
+			req.session.registeringUserinfo = undefined;
+			req.session.registeringUser = undefined;
 			try {
 				// Login user
 				helper.loginUser(req, res, userinfo)

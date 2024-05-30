@@ -8,8 +8,6 @@ const webRoutes = require('./helpers/webRoutes');
 const apiRoutes = require('./helpers/apiRoutes');
 const fs = require('fs');
 
-// TODO: fix styling
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup, Server Activation
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
