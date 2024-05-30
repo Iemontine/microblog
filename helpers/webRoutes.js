@@ -24,14 +24,23 @@ const router = express.Router();
 // Home route: render home view with posts and user
 router.get('/', async (req, res) => {
 	// Pass the posts and user variables into the home template
-	const posts = await helper.getPosts();
+	const sortBy = req.query.sortBy || 'timestamp';
+	const order = req.query.order || 'DESC';
+	const tag = req.query.tag || '';
+	const posts = await helper.getPosts(sortBy, order, tag);
 	const user = await helper.getCurrentUser(req) || {};
-	res.render('home', { posts, user });
+	let tags = ['Dad Joke', 'Dark Humor', 'Ironic', 'One-liner', 'Self-deprecating', 'Computer Science', 'Meta Humor'];
+	res.render('home', { posts, user, sortBy, order, tag, tags });
 });
 
 // Register GET route is used for error response from registration
 router.get('/register', (req, res) => {
 	res.render('loginRegister', { regError: req.query.error });
+});
+
+// Register Username route where the user can enter a desired username.
+router.get('/registerUsername', (req, res) => {
+	res.render('registerUsername', { usernameError: req.query.error });
 });
 
 // Login route GET route is used for error response from login
@@ -103,13 +112,31 @@ router.post('/like/:id', async (req, res) => {
 // Register route: register a new user
 router.post('/register', (req, res) => {
 	try {
-		req.session.registeringUser = req.body.username;
 		req.session.registering = true;
 		res.redirect('/auth/google');
 	} catch (error) {
 		console.error(error);
 	}
 });
+
+// Register route: get the registering user's desired username
+router.post('/registerUsername', async (req, res) => {
+	try {
+		req.session.registeringUser = req.body.username;
+		let userinfo = req.session.registeringUserinfo;
+		try {
+			// Register user, if successful generate avatar
+			if (helper.registerUser(req, res, userinfo)) {
+				await helper.handleAvatar(req, res);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 
 // Login route: login a user
 router.post('/login', (req, res) => {

@@ -81,20 +81,21 @@ function isAuthenticated(req, res, next) {
 // Function to register a user
 async function registerUser(req, res, userinfo) {
 	// Set username to either the user's input name or their Google name
-	let username = req.session.registeringUser || userinfo.data.name;
-
-	let existingUser = await findUserByGoogleId(crypto.createHash('sha256', userinfo.data.id).toString());
+	let username = req.session.registeringUser;
+	let usernameTaken = await findUserByUsername(username);
 	if (username === '') {
-		res.redirect('/register?error=Input%20required');
+		res.redirect('/registerUsername?error=Input%20required');
 		return false;
-	} else if (existingUser) {
-		res.redirect('/register?error=User%20already%20exists');
+	} else if (usernameTaken) {
+		res.redirect('/registerUsername?error=Username%20taken');
 		return false;
 	} else {
 		let userId = await addUser(username, userinfo);
 		// req.session.user = user;
 		req.session.userId = userId;
 		req.session.loggedIn = true;
+		req.session.registeringUser = undefined;
+		req.session.registeringUserinfo
 		req.session.save((err) => {
 			if (err) {
 				console.error('Error saving session:', err);
@@ -113,7 +114,7 @@ async function addUser(username, userinfo) {
 	let timeStamp = getNewTimeStamp();
 	let user = {
 		username: username,
-		hashedGoogleId: crypto.createHash('sha256', userinfo.data.id).toString(),
+		hashedGoogleId: crypto.createHash('sha256').update(userinfo.data.id).digest('hex'),
 		email: userinfo.data.email,
 		avatar_url: undefined,
 		memberSince: timeStamp,
@@ -139,11 +140,12 @@ async function addUser(username, userinfo) {
 
 // Function to login a user
 async function loginUser(req, res, userinfo) {
-	let user = await findUserByGoogleId(crypto.createHash('sha256', userinfo.data.id).toString());
+	let hashedGoogleId = crypto.createHash('sha256').update(userinfo.data.id).digest('hex')
+	let user = await findUserByGoogleId(hashedGoogleId);
 	if (user) {
 		// req.session.user = user;
 		if (!user.avatar_url) {
-			const url = '/images/' + username + '.png';
+			const url = '/avatars/' + username + '.png';
 			await generateAvatar(username, url);
 		}	
 		req.session.userId = user.id;
@@ -224,7 +226,7 @@ async function handleAvatar(req, res) {
 	const user = findUserByUsername(username);
 	req.session.registeringUser = undefined; // Clear the registering user, now unnecessary
 	if (!user.avatar_url) {
-		const url = './public/images/' + username + '.png';
+		const url = './public/avatars/' + username + '.png';
 		await db.run('UPDATE users SET avatar_url = ? WHERE username = ?', [url, username]);
 		await generateAvatar(username, url);
 	}
@@ -260,8 +262,19 @@ async function generateAvatar(username, url, width = 100, height = 100) {
 }
 
 // Function to get all posts, sorted by latest first
-async function getPosts() {
-	let posts = await db.all('SELECT * FROM posts');
+async function getPosts(sortBy = "timestamp", order = "DESC", tag = '') {
+	let query = 'SELECT * FROM posts';
+	const params = [];
+	
+	// Sort by multiple tags?
+	if (tag !== '') {
+		query += ' WHERE tag = ?';
+		params.push(tag);
+	}
+
+	// Perform the sorted query
+	query += ' ORDER BY ' + sortBy + ' ' + order;
+	let posts = await db.all(query, params);
 	return posts;
 }
 
@@ -291,7 +304,7 @@ async function createUserAvatars() {
 	const users = await db.all('SELECT * FROM users');
 	await Promise.all(users.map(async user => {
 		if (!user.avatar_url) {
-			const url = './public/images/' + user.username + '.png';
+			const url = './public/avatars/' + user.username + '.png';
 			await generateAvatar(user.username, url);
 		}
 	}))
@@ -299,6 +312,7 @@ async function createUserAvatars() {
 
 module.exports = {
 	findUserByUsername,
+	findUserByGoogleId,
 	findUserById,
 	findPostById,
 	getCurrentUser,
