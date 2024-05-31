@@ -4,6 +4,7 @@ const express = require('express');
 const { google } = require('googleapis');
 const fetch = require('node-fetch');
 const helper = require('./support');
+const crypto = require('crypto');
 
 const router = express.Router();
 const { OAuth2Client } = require('google-auth-library');
@@ -43,20 +44,15 @@ router.get('/auth/google/callback', async (req, res) => {
 		});
 		const userinfo = await oauth2.userinfo.get();
 
-		// Check if user is registering or logging in
-		if (req.session.registering) {
-			req.session.registering = false;
-			try {
-				// Register user, if successful generate avatar
-				if (helper.registerUser(req, res, userinfo)) {
-					await helper.handleAvatar(req, res);
-				}
-			} catch (error) {
-				console.error(error);
-			}
-		}
-		else if (req.session.loggingIn) {
-			req.session.loggingIn = false;
+		req.session.registeringUserinfo = userinfo;
+		const hashedGoogleId = crypto.createHash('sha256').update(userinfo.data.id).digest('hex');
+		let existingUser = await helper.findUserByGoogleId(hashedGoogleId);
+
+		if (!existingUser) {
+			res.redirect('/registerUsername');
+		} else {
+			req.session.registeringUserinfo = undefined;
+			req.session.registeringUser = undefined;
 			try {
 				// Login user
 				helper.loginUser(req, res, userinfo)
@@ -66,6 +62,7 @@ router.get('/auth/google/callback', async (req, res) => {
 		}
 	} catch (error) {
 		console.error(error);
+		res.redirect('/login?error=Login%20failed')
 	}
 });
 

@@ -3,7 +3,7 @@
 <div class="login-container">
 	<section class="login-register">
 		<section class = "login-area">
-			<h2>LOG IN TO AN EXISTING ACCOUNT</h2>
+			<h2>LOG IN WITH GOOGLE</h2>
 			<!-- Error handling -->
 			{{#if loginError}}
 				<p style="color: red;">{{loginError}}</p>
@@ -11,18 +11,6 @@
 			<!-- Login form -->
 			<form id="login" action="/login" method="POST">
 				<button type="submit">LOG IN</button>
-			</form>
-		</section>
-		<section class = "register-area">
-			<h2>REGISTER A NEW ACCOUNT</h2>
-			<!-- Error handling -->
-			{{#if regError}}
-				<p style="color: red;">{{regError}}</p>
-			{{/if}}
-			<!-- Register form -->
-			<form id="register" action="/register" method="POST">
-				<input type="text" name="username" id="registerUserName">
-				<button type="submit">REGISTER</button>
 			</form>
 		</section>
 	</section>

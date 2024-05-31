@@ -3,19 +3,26 @@
 const express = require('express');
 const expressHandlebars = require('express-handlebars');
 const session = require('express-session');
+const fs = require('fs');
+const path = require('path');
 
 const webRoutes = require('./helpers/webRoutes');
 const apiRoutes = require('./helpers/apiRoutes');
-const fs = require('fs');
-
-// TODO: fix styling
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Configuration and Setup, Server Activation
+// Configuration and Setup
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 const app = express();
 const PORT = 3000;
+const avatarsDir = path.join(__dirname, 'public', 'avatars');
+if (!fs.existsSync(avatarsDir)) {
+	fs.mkdirSync(avatarsDir);
+}
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+	fs.mkdirSync(uploadsDir);
+}
 
 // TODO: new lines don't look so good rn, need to somehow replace with <br>
 
@@ -77,8 +84,10 @@ app.use(express.json());							// Parse JSON bodies (as sent by API clients)
 app.use('/', webRoutes);							// Use webRoutes for web routes
 app.use('/', apiRoutes);							// Use apiRoutes for API routes
 
-// Server activation
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Server Activation
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 app.listen(PORT, () => {
 	console.log(`Server is running on http://localhost:${PORT}`);
 });
-
