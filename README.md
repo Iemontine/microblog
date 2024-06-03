@@ -12,7 +12,7 @@ npm install sqlite3
 npm install multer
 ```
 
-Set environment variables:
+Set environment variables in .env:
 ```
 EMOJI_API_KEY=(emoji-api key)
 CLIENT_SECRET=(Google OAuth Secret)
