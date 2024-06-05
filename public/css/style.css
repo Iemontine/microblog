@@ -192,7 +192,7 @@ header .profile-picture {
 /* ================================ USER FORM ================================ */
 .post-form {
 	width: 100%;
-	max-width: 600px;
+	max-width: 700px;
 	display: flex;
 	flex-direction: column;
 	background-color: #0D131B;
