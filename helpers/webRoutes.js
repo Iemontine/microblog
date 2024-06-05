@@ -148,6 +148,7 @@ router.post('/modify_profile', upload.single('avatar'), async (req, res) => {
 		let avatar_url = user.avatar_url;
 
 		// Check if the username is unique
+		// TODO: could use similar input checking throughout, spaces in username? compare on lowercase basis?
 		const existingUser = await db.get('SELECT * FROM users WHERE username = ?', [username]);
 		if (existingUser && existingUser.id !== userId) {
 			res.redirect('/profile?error=Username%20taken');
