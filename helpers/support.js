@@ -174,7 +174,7 @@ async function renderProfile(req, res) {
 	let userId = req.session.userId;
 	const user = await findUserById(userId);
 	let posts = await getUserPosts(user);
-	res.render('profile', {user, posts});
+	res.render('profile', { user, posts, usernameError: req.query.error });
 }
 
 async function getUserPosts(user) {

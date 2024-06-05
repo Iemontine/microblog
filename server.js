@@ -30,24 +30,35 @@ if (!fs.existsSync(uploadsDir)) {
 // They enhance the functionality of templates and help simplify data manipulation directly within the view files.
 app.engine('handlebars', expressHandlebars.engine({
 		helpers: {
-			toLowerCase: (str) => str.toLowerCase(),
-			// Converts a given string to lowercase. Usage example: {{toLowerCase 'SAMPLE STRING'}} -> 'sample string'
-			ifCond: function (v1, v2, options) {
-				if (v1 === v2) {
-					return options.fn(this);
+		toLowerCase: (str) => str.toLowerCase(),
+		// Converts a given string to lowercase. Usage example: {{toLowerCase 'SAMPLE STRING'}} -> 'sample string'
+		ifCond: function (v1, v2, options) {
+			if (v1 === v2) {
+				return options.fn(this);
+			}
+			return options.inverse(this);
+		},
+		// Compares two values for equality and returns a block of content based on the comparison result.
+		exists: function (filePath) {
+			try {
+				fs.accessSync(filePath);
+				return true;
+			} catch (error) {
+				return false;
+			}
+		},
+		// Checks if a file exists at the given path.
+		avatarUrl: function findAvatar(username) {
+			const avatarsDir = path.join(__dirname, 'public', 'avatars');
+				const extensions = ['.png', '.jpg', '.jpeg', '.gif'];
+				for (let ext of extensions) {
+					const avatarPath = path.join(avatarsDir, username + ext);
+					if (fs.existsSync(avatarPath)) {
+						return `/avatars/${username}${ext}`;
+					}
 				}
-				return options.inverse(this);
-			},
-			// Compares two values for equality and returns a block of content based on the comparison result.
-			exists: function (filePath) {
-				try {
-					fs.accessSync(filePath);
-					return true;
-				} catch (error) {
-					return false;
-				}
-			},
-			// Checks if a file exists at the given path.
+				return null;
+			}
 		},
 	})
 );

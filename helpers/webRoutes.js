@@ -139,6 +139,7 @@ router.get('/logout', (req, res) => {
 const publicDir = path.join(__dirname, '..', 'public');
 const uploadsDir = path.join(__dirname, '..', 'public', 'uploads');
 router.post('/modify_profile', upload.single('avatar'), async (req, res) => {
+	// TODO: input validation
 	const db = await sqlite.open({ filename: 'your_database_file.db', driver: sqlite3.Database });
 	try {
 		const { username } = req.body;
@@ -146,28 +147,47 @@ router.post('/modify_profile', upload.single('avatar'), async (req, res) => {
 		const user = await helper.findUserById(userId);
 		let avatar_url = user.avatar_url;
 
+		// Check if the username is unique
+		const existingUser = await db.get('SELECT * FROM users WHERE username = ?', [username]);
+		if (existingUser && existingUser.id !== userId) {
+			res.redirect('/profile?error=Username%20taken');
+			return;
+		}
+
 		if (req.file) {
+			// Updating username
+			if (user.username != username) {
+				avatar_url = `/avatars/${username}${path.extname(req.file.filename)}`;
+			}
 			let uploaded_avatar_url = path.join(uploadsDir, req.file.filename);
-			let new_avatar_url = path.join(publicDir, user.avatar_url);
+			let new_avatar_url = path.join(publicDir, avatar_url);
 			fs.rename(uploaded_avatar_url, new_avatar_url, function (err) {
 				if (err) console.log('ERROR: ' + err);
 			});
+			user.avatar_url = path.relative(publicDir, new_avatar_url);  // Update the avatar URL
 		}
-
-		// TODO: ensure, when the username is updated, that it is unique
-		// TODO: ensure the avatar_url is updated to match the new name if it is updated
+		else {
+			let old_avatar_url = path.join(publicDir, avatar_url);
+			if (user.username != username) {
+				avatar_url = `/avatars/${username}.${avatar_url.split('.').pop()}`;
+			}
+			let new_avatar_url = path.join(publicDir, avatar_url);
+			fs.rename(old_avatar_url, new_avatar_url, function (err) {
+				if (err) console.log('ERROR: ' + err);
+			});
+			user.avatar_url = path.relative(publicDir, new_avatar_url);  // Update the avatar URL
+		}
 
 		await db.run('UPDATE users SET username = ?, avatar_url = ? WHERE id = ?', [username, avatar_url, userId]);
 		await db.run('UPDATE posts SET username = ? WHERE username = ?', [username, user.username]);
 		res.redirect('/profile');
 	} catch (error) {
 		console.error('Error updating profile:', error);
-		res.status(500).send('Internal Server Error');
+		res.redirect('/profile?error=Something%20went%20wrong');
 	} finally {
 		await db.close();
 	}
 });
-
 // Delete route: delete a post
 router.post('/delete/:id', helper.isAuthenticated, (req, res) => {
 	try {

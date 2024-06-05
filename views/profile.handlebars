@@ -4,12 +4,16 @@
 <div id="profile-screen">
 	<div id="profile-container">
 		<form action="/modify_profile" method="POST" enctype="multipart/form-data">
-			<img src="{{user.avatar_url}}" alt="{{user.username}}" class="profile-picture">
+			<img src="{{avatarUrl user.username}}" alt="{{user.username}}" class="profile-picture">
 			<div id="profile-info">
 				<h1>{{user.username}}</h1>
 				<p>Created: {{user.memberSince}}</p>
 				<div>
-					<p>Change username</p>
+					{{#if usernameError}}
+						<p style="color: red;">{{usernameError}}</p>
+					{{else}}
+						<p>Change username</p>
+					{{/if}}
 					<input type="text" name="username" placeholder="New Username" value="{{user.username}}" required>
 				</div>
 				<input type="hidden" name="currentAvatar" value="{{user.avatar_url}}">
