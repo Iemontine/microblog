@@ -3,27 +3,27 @@
 
 <div id="profile-screen">
 	<div id="profile-container">
-		<form action="/profile" method="POST" enctype="multipart/form-data">
-        <img src={{user.avatar_url}} alt={{user.username}} class="profile-picture">
-        <div id="profile-info">
-            <h1>{{user.username}}</h1>
-			<p>Created: {{user.memberSince}}</p>
-			<div>
-				<p>Change username</p>
-            	<input type="text" name="username" placeholder="New Username" value="{{user.username}}" required>
+		<form action="/modify_profile" method="POST" enctype="multipart/form-data">
+			<img src="{{user.avatar_url}}" alt="{{user.username}}" class="profile-picture">
+			<div id="profile-info">
+				<h1>{{user.username}}</h1>
+				<p>Created: {{user.memberSince}}</p>
+				<div>
+					<p>Change username</p>
+					<input type="text" name="username" placeholder="New Username" value="{{user.username}}" required>
+				</div>
+				<input type="hidden" name="currentAvatar" value="{{user.avatar_url}}">
+				<button type="button" class="fileLabel">
+					<label class="fileLabel" for="image">Change Profile Picture</label>
+				</button>
+				<input type="file" id="image" name="avatar" hidden>
 			</div>
-			<button type="button" class="fileLabel">
-				<label class="fileLabel" for="image">Change Profile Picture</label>
-			</button>
-			<input type="file" id="image" name="file" hidden>
-        </div>
-        <button type="submit">Update Profile</button>
-    </form>
+			<button type="submit">Update Profile</button>
+		</form>
 	</div>
   
 	<section class="user-posts">
 		<h2>Your {{{postNeoType}}}s</h2>
-		<!-- Conditionally show all of the user's posts -->
 		{{#if posts}}
 			<ul>
 				{{#each posts}}

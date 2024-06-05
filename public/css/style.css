@@ -7,16 +7,14 @@
 @font-face { font-family: 'MotivaSansThin'; src: url('resources/fonts/MotivaSansThin.ttf'); }
 
 /* ================================ GENERAL ================================ */
-html {
+html body {
     background-color: #171D25; /* Matches the header color */
-}
-
-body {
     margin: 0;
     font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
     background: radial-gradient(circle, #143241, #1B2838);
     background-color: #182C3B;
 }
+
 /* ================================ NAVBAR ================================ */
 
 header {
@@ -57,8 +55,8 @@ ul li a {
 	font-family: 'MotivaSansMedium', Arial, Helvetica, sans-serif;
 }
 header .profile-picture {
-	width: 40px;
-	height: 40px;
+	width: 50px;
+	height: 50px;
 	border-radius: 10%;
 	border-width: 2px;
 	border-style: solid;
@@ -225,13 +223,24 @@ header .profile-picture {
 #profile-screen {
 	padding: 20px;
 }
-#profile-container .profile-picture {
+#content-container > .profile-picture {
 	border-radius: 10%;
 	border-width: 2px;
+	width: 50px;
+	height: 50px;
 	border-style: solid;
 	border-color: #D3D4D5;
 	overflow: hidden;
-	height: auto;
+	align-self: center;
+}
+#profile-container > form > .profile-picture {
+	border-radius: 10%;
+	border-width: 2px;
+	width: 200px;
+	height: 200px;
+	border-style: solid;
+	border-color: #D3D4D5;
+	overflow: hidden;
 	align-self: center;
 }
 #profile-container h1, #profile-container h2 {
@@ -390,7 +399,6 @@ footer p {
 .login-container {
 	padding-inline: 20px;
 	padding-top: 20px;
-	padding-bottom:100%;
 	display: flex;
 	justify-content: center;
 	align-items: center;

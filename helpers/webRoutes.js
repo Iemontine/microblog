@@ -3,7 +3,10 @@
 const express = require('express');
 const helper = require('./support');
 const multer = require('multer');
+const sqlite = require('sqlite');
+const sqlite3 = require('sqlite3');
 const path = require('path');
+const fs = require('fs');
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 		cb(null, './public/uploads/'); // Destination folder for uploaded files
@@ -130,6 +133,39 @@ router.post('/login', (req, res) => {
 // Logout route: log out a user
 router.get('/logout', (req, res) => {
 	helper.logoutUser(req, res);
+});
+
+// Modify profile route: update user profile
+const publicDir = path.join(__dirname, '..', 'public');
+const uploadsDir = path.join(__dirname, '..', 'public', 'uploads');
+router.post('/modify_profile', upload.single('avatar'), async (req, res) => {
+	const db = await sqlite.open({ filename: 'your_database_file.db', driver: sqlite3.Database });
+	try {
+		const { username } = req.body;
+		const userId = req.session.userId;
+		const user = await helper.findUserById(userId);
+		let avatar_url = user.avatar_url;
+
+		if (req.file) {
+			let uploaded_avatar_url = path.join(uploadsDir, req.file.filename);
+			let new_avatar_url = path.join(publicDir, user.avatar_url);
+			fs.rename(uploaded_avatar_url, new_avatar_url, function (err) {
+				if (err) console.log('ERROR: ' + err);
+			});
+		}
+
+		// TODO: ensure, when the username is updated, that it is unique
+		// TODO: ensure the avatar_url is updated to match the new name if it is updated
+
+		await db.run('UPDATE users SET username = ?, avatar_url = ? WHERE id = ?', [username, avatar_url, userId]);
+		await db.run('UPDATE posts SET username = ? WHERE username = ?', [username, user.username]);
+		res.redirect('/profile');
+	} catch (error) {
+		console.error('Error updating profile:', error);
+		res.status(500).send('Internal Server Error');
+	} finally {
+		await db.close();
+	}
 });
 
 // Delete route: delete a post
