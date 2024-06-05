@@ -7,12 +7,16 @@
 @font-face { font-family: 'MotivaSansThin'; src: url('resources/fonts/MotivaSansThin.ttf'); }
 
 /* ================================ GENERAL ================================ */
-html, body {
-	margin: 0;
-	font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
-	background: radial-gradient(circle, #143241, #1B2838);
+html {
+    background-color: #171D25; /* Matches the header color */
 }
 
+body {
+    margin: 0;
+    font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
+    background: radial-gradient(circle, #143241, #1B2838);
+    background-color: #182C3B;
+}
 /* ================================ NAVBAR ================================ */
 
 header {
@@ -212,6 +216,7 @@ header .profile-picture {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	text-align: center;
 	gap: 10px;
 	width: 100%;
 	color: #C5C3C0;
@@ -226,17 +231,26 @@ header .profile-picture {
 	border-style: solid;
 	border-color: #D3D4D5;
 	overflow: hidden;
+	height: auto;
+	align-self: center;
 }
-#profile-container h1 {
+#profile-container h1, #profile-container h2 {
 	margin: 0;
 }
-#profile-container h2 {
-	margin: 0;
+#profile-container button {
+	margin-bottom: 10px;
 }
 #profile-info {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+}
+#profile-info p {
+	margin: 5px;
+}
+#profile-info div {
+	margin: 5px;
+	display: flex;
+	flex-direction:row;
 }
 .post-form .profile-picture {
 	width: 50px;
@@ -347,11 +361,11 @@ header .profile-picture {
 	width: 150px;
 }
 #sortFilterForm select:hover {
-	background-color: #1ABC9C;
+	background-color: #34495E;
 }
 #sortFilterForm select:focus {
 	outline: none;
-	background-color: #16A085;
+	background-color: #34495E;
 }
 #sortFilterForm > div > select {
 	font-family: 'MotivaSansRegular', Arial, Helvetica, sans-serif;
@@ -376,6 +390,7 @@ footer p {
 .login-container {
 	padding-inline: 20px;
 	padding-top: 20px;
+	padding-bottom:100%;
 	display: flex;
 	justify-content: center;
 	align-items: center;

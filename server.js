@@ -70,7 +70,7 @@ app.use(
 
 // Application Constants
 app.use((req, res, next) => {
-	res.locals.appName = 'Joke of the Year';
+	res.locals.appName = 'Humor of the Year';
 	res.locals.copyrightYear = 2024;
 	res.locals.postNeoType = 'Joke';
 	res.locals.loggedIn = req.session.loggedIn || false;
