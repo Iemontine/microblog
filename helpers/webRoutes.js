@@ -17,7 +17,6 @@ const storage = multer.diskStorage({
 });
 // TODO: Allow videos to be uploaded somehow
 const upload = multer({ storage: storage });
-
 const router = express.Router();
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -149,7 +148,7 @@ router.post('/modify_profile', upload.single('avatar'), async (req, res) => {
 
 		// Check if the username is unique
 		// TODO: could use similar input checking throughout, spaces in username? compare on lowercase basis?
-		const existingUser = await helper.getUserByUsername(username);
+		const existingUser = await helper.findUserByUsername(username);
 		if (existingUser && existingUser.id !== userId) {
 			res.redirect('/profile?error=Username%20taken');
 			return;
