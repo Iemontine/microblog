@@ -149,37 +149,44 @@ router.post('/modify_profile', upload.single('avatar'), async (req, res) => {
 
 		// Check if the username is unique
 		// TODO: could use similar input checking throughout, spaces in username? compare on lowercase basis?
-		const existingUser = await db.get('SELECT * FROM users WHERE username = ?', [username]);
+		const existingUser = await helper.getUserByUsername(username);
 		if (existingUser && existingUser.id !== userId) {
 			res.redirect('/profile?error=Username%20taken');
 			return;
 		}
 
-		if (req.file) {
-			// Updating username
+		if (req.file) {	// If file uploaded
+			// Update avatar URL if user changed username
 			if (user.username != username) {
 				avatar_url = `/avatars/${username}${path.extname(req.file.filename)}`;
 			}
+			// Rename & move the uploaded file to the new avatar URL
 			let uploaded_avatar_url = path.join(uploadsDir, req.file.filename);
 			let new_avatar_url = path.join(publicDir, avatar_url);
 			fs.rename(uploaded_avatar_url, new_avatar_url, function (err) {
 				if (err) console.log('ERROR: ' + err);
 			});
-			user.avatar_url = path.relative(publicDir, new_avatar_url);  // Update the avatar URL
+			// Update the avatar URL
+			user.avatar_url = path.relative(publicDir, new_avatar_url);
 		}
-		else {
+		else { // If no file uploaded
+			// Update avatar URL if user changed username
 			let old_avatar_url = path.join(publicDir, avatar_url);
 			if (user.username != username) {
 				avatar_url = `/avatars/${username}.${avatar_url.split('.').pop()}`;
 			}
+			// Rename the avatar file to match the new username
 			let new_avatar_url = path.join(publicDir, avatar_url);
 			fs.rename(old_avatar_url, new_avatar_url, function (err) {
 				if (err) console.log('ERROR: ' + err);
 			});
-			user.avatar_url = path.relative(publicDir, new_avatar_url);  // Update the avatar URL
+			// Update the avatar URL
+			user.avatar_url = path.relative(publicDir, new_avatar_url);  
 		}
 
+		// Update the user's username and avatar URL in the database
 		await db.run('UPDATE users SET username = ?, avatar_url = ? WHERE id = ?', [username, avatar_url, userId]);
+		// Update all post's belonging to the user to use the new username
 		await db.run('UPDATE posts SET username = ? WHERE username = ?', [username, user.username]);
 		res.redirect('/profile');
 	} catch (error) {
