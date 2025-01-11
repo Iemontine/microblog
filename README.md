@@ -42,7 +42,7 @@ node server.js
 ## Sorting posts
 <img src="https://github.com/user-attachments/assets/7b97a46e-086a-424b-9d8d-f8d4c39235b8" alt="Sorting posts" width="500">
 
-## Google OAuth for User Sign-in and Authentication
+## Google OAuth for User Sign-in and Authentication, registering user and default profile picture
 <img src="https://github.com/user-attachments/assets/a9297f99-b957-418e-9348-e021afd98a83" alt="Google OAuth for User Sign-in and Authentication" width="500">
 <img src="https://github.com/user-attachments/assets/1a69cbc5-485a-4dd8-9a86-3999be71fd93" alt="Set name page" width="500">
 
